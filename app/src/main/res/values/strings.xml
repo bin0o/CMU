@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PharmacIST</string>
+    <string name="hello">Hello!</string>
+    <string name="api_key">AIzaSyDILjA5gjrqrskJP_GcOnpsn7FSA8tYkxg</string>
+</resources>
