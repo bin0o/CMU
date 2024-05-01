@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.PharmacIST" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.PharmacIST" parent="Theme.MaterialComponents.Light.DarkActionBar" >
+        <!-- Primary colors -->
+
+    </style>
 </resources>

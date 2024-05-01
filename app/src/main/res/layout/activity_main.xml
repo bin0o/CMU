@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <TextView
@@ -12,18 +11,9 @@
         android:text="@string/hello"
         android:textSize="25sp" />
 
-    <SearchView
-        android:id="@+id/mapSearch"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:iconifiedByDefault="false"/>
-
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        tools:context="pt.ulisboa.tecnico.cmov.pharmacist"
-        />
+        android:layout_height="680dp"
+        android:id="@+id/frame_layout" />
 
 </LinearLayout>

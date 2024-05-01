@@ -2,4 +2,6 @@
     <string name="app_name">PharmacIST</string>
     <string name="hello">Hello!</string>
     <string name="api_key">AIzaSyDILjA5gjrqrskJP_GcOnpsn7FSA8tYkxg</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
