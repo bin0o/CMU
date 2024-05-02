@@ -1,7 +1,14 @@
 <resources>
-    <string name="app_name">PharmacIST</string>
-    <string name="hello">Hello!</string>
+    <!-- API Key for Google Maps -->
     <string name="api_key">AIzaSyDILjA5gjrqrskJP_GcOnpsn7FSA8tYkxg</string>
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- App name -->
+    <string name="app_name">PharmacIST</string>
+
+    <!-- Login/ Signup -->
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="signup">Signup</string>
+    <string name="login">Login</string>
 </resources>
