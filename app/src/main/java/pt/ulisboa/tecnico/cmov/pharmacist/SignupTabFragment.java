@@ -39,6 +39,7 @@ public class SignupTabFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_signup_tab, container, false);
 
+        // Initialize FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
 
         editTextUsername = view.findViewById(R.id.signup_username);
@@ -93,7 +94,6 @@ public class SignupTabFragment extends Fragment {
 
             }
         });
-
 
         return view;
     }
