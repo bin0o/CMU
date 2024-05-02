@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "167024821661",
+    "firebase_url": "https://pharmacyist-237de-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "pharmacyist-237de",
+    "storage_bucket": "pharmacyist-237de.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:167024821661:android:14e6c564495171ee82db74",
+        "android_client_info": {
+          "package_name": "pt.ulisboa.cmov.pharmacist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_FhJYhZedMmLpyPHzNaJjrem6eesRZkA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:167024821661:android:258137ac672c236a82db74",
+        "android_client_info": {
+          "package_name": "pt.ulisboa.tecnico.cmov.pharmacist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_FhJYhZedMmLpyPHzNaJjrem6eesRZkA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
