@@ -35,7 +35,7 @@ import java.util.List;
 
 
 public class MapFragment extends Fragment {
-    
+
     private final String TAG = "Map_Fragment";
 
     private final int FINE_PERMISSION_CODE = 1;
@@ -65,10 +65,17 @@ public class MapFragment extends Fragment {
 
 
         supportMapFragment.getMapAsync(new OnMapReadyCallback() {
-            @SuppressLint("MissingPermission")
+
             @Override
             public void onMapReady(@NonNull GoogleMap googleMap) {
                 map = googleMap;
+
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERMISSION_CODE);
+                    ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, FINE_PERMISSION_CODE);
+                }
+
 
                 map.setMyLocationEnabled(true);
 
@@ -113,12 +120,12 @@ public class MapFragment extends Fragment {
         return view;
     }
 
+
     private void getLastLocation() {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERMISSION_CODE);
             ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, FINE_PERMISSION_CODE);
-            return;
         }
 
         Task<Location> task = client.getLastLocation();
