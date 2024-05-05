@@ -1,14 +1,28 @@
 <resources>
-    <!-- API Key for Google Maps -->
-    <string name="api_key">AIzaSyDILjA5gjrqrskJP_GcOnpsn7FSA8tYkxg</string>
-
     <!-- App name -->
     <string name="app_name">PharmacIST</string>
 
-    <!-- Login/ Signup -->
+    <!-- API Key for Google Maps -->
+    <string name="api_key">AIzaSyDILjA5gjrqrskJP_GcOnpsn7FSA8tYkxg</string>
+
+    <!-- Toolbar -->
+    <string name="menu">Menu</string>
+    <string name="shopping_cart">Shopping Cart</string>
+    <string name="notifications">Notifications</string>
+
+    <!-- Welcome page -->
+    <string name="welcome_to">Welcome</string>
+    <string name="welcome_description">PharmacIST allows users to find pharmacies and medicines in their surroundings, view information about pharmacies and their available stocks, search for medicines at those pharmacies and reserve medicines for future purchase</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="continue_as_a_guest">Continue as a guest</string>
+
+    <!-- Login/ Signup pages -->
+    <string name="login_to_your_account">Login to your account</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
-    <string name="confirm_password">Confirm Password</string>
-    <string name="signup">Signup</string>
     <string name="login">Login</string>
+    <string name="create_a_new_account">Create your account</string>
+    <string name="confirm_password">Confirm Password</string>
+
 </resources>

@@ -17,14 +17,14 @@
         android:layout_marginStart="20dp" />
 
     <TextView
-        android:id="@+id/login_text"
+        android:id="@+id/sign_up_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_alignParentTop="true"
-        android:text="@string/sign_in"
+        android:text="@string/sign_up"
         android:textColor="@color/white"
         android:textSize="30sp"
         android:textStyle="bold" />
@@ -34,8 +34,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_below="@id/login_text"
-        android:text="@string/login_to_your_account"
+        android:layout_below="@id/sign_up_text"
+        android:text="@string/create_a_new_account"
         android:textColor="@color/white"
         android:textSize="20sp" />
 
@@ -47,9 +47,9 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/login_username"
+            android:id="@+id/signup_username"
             android:layout_width="300dp"
-            android:layout_height="60dp"
+            android:layout_height="55dp"
             android:layout_gravity="center"
             android:layout_marginTop="50dp"
             android:background="@drawable/edit_text_bkg"
@@ -60,9 +60,9 @@
             android:paddingStart="20dp" />
 
         <EditText
-            android:id="@+id/login_password"
+            android:id="@+id/signup_password"
             android:layout_width="300dp"
-            android:layout_height="60dp"
+            android:layout_height="55dp"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
             android:background="@drawable/edit_text_bkg"
@@ -72,14 +72,29 @@
             android:inputType="textPassword"
             android:paddingStart="20dp" />
 
+        <EditText
+            android:id="@+id/confirm_password"
+            android:layout_width="300dp"
+            android:layout_height="55dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/edit_text_bkg"
+            android:drawableStart="@drawable/baseline_password_24"
+            android:drawablePadding="10dp"
+            android:hint="@string/confirm_password"
+            android:inputType="textPassword"
+            android:paddingStart="20dp" />
+
+
+
         <Button
-            android:id="@+id/login_button"
+            android:id="@+id/sign_up_button"
             android:layout_width="300dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:layout_marginTop="50dp"
+            android:text="@string/sign_up"
             android:background="@drawable/login_signup_button_bkg"
-            android:text="@string/login"
             android:textSize="18sp" />
 
         <ImageView

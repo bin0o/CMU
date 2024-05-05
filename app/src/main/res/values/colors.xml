@@ -6,5 +6,6 @@
     <color name="baby_blue">#90E0EF</color>
     <color name="pastel_blue">#CAF0F8</color>
     <color name="black">#FF000000</color>
+    <color name="light_gray">#F1F1F1</color>
     <color name="white">#FFFFFFFF</color>
 </resources>

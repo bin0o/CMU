@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.cmov.pharmacist;
 
-import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -33,7 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class MapFragment extends Fragment {
 
     private final String TAG = "Map_Fragment";
@@ -61,51 +59,56 @@ public class MapFragment extends Fragment {
         client = LocationServices.getFusedLocationProviderClient(getActivity());
 
         SupportMapFragment supportMapFragment = (SupportMapFragment)
-            getChildFragmentManager().findFragmentById(R.id.map);
+                getChildFragmentManager().findFragmentById(R.id.map);
 
-        supportMapFragment.getMapAsync(new OnMapReadyCallback() {
 
-            @Override
-            public void onMapReady(@NonNull GoogleMap googleMap) {
-                map = googleMap;
+        if (supportMapFragment != null) {
+            supportMapFragment.getMapAsync(new OnMapReadyCallback() {
 
-                // Set up search query listener
-                SearchView mapSearch = view.findViewById(R.id.mapSearch);
-                mapSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        String location = mapSearch.getQuery().toString();
-                        List<Address> addresses = new ArrayList<>();
+                @Override
+                public void onMapReady(@NonNull GoogleMap googleMap) {
+                    map = googleMap;
 
-                        // Use Geocoder to get location from name
-                        Geocoder geocoder = new Geocoder(getActivity());
-                        try {
-                            addresses = geocoder.getFromLocationName(location, 1);
-                        } catch (IOException e) {
-                            Log.e(TAG, "Location not Found!");
+                    map.getUiSettings().setZoomControlsEnabled(true);
+
+                    // Set up search query listener
+                    SearchView mapSearch = view.findViewById(R.id.mapSearch);
+                    mapSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                        @Override
+                        public boolean onQueryTextSubmit(String query) {
+                            String location = mapSearch.getQuery().toString();
+                            List<Address> addresses = new ArrayList<>();
+
+                            // Use Geocoder to get location from name
+                            Geocoder geocoder = new Geocoder(getActivity());
+                            try {
+                                addresses = geocoder.getFromLocationName(location, 1);
+                            } catch (IOException e) {
+                                Log.e(TAG, "Location not Found!");
+                            }
+
+                            if (addresses != null) {
+                                Address address = addresses.get(0);
+
+                                // Move camera to searched location
+                                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+                            } else {
+                                Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
+                            }
+                            return false;
                         }
 
-                        if (!addresses.isEmpty()) {
-                            Address address = addresses.get(0);
-
-                            // Move camera to searched location
-                            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
-                        } else {
-                            Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
+                        @Override
+                        public boolean onQueryTextChange(String newText) {
+                            return false;
                         }
-                        return false;
-                    }
+                    });
 
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        return false;
-                    }
-                });
-
-                getLastLocation();
-            }
-        });
+                    getLastLocation();
+                }
+            });
+        }
 
         return view;
     }
@@ -142,18 +145,14 @@ public class MapFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case FINE_PERMISSION_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getLastLocation();
-                    Log.i(TAG, "location fine permission granted");
+        if (requestCode == FINE_PERMISSION_CODE) {// If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLastLocation();
+                Log.i(TAG, "location fine permission granted");
 
-                } else {
-                    Toast.makeText(getActivity(), "No Permission to View Location. Please Allow!",Toast.LENGTH_SHORT).show();
-                }
+            } else {
+                Toast.makeText(getActivity(), "No Permission to View Location. Please Allow!", Toast.LENGTH_SHORT).show();
             }
-
         }
     }
 }
