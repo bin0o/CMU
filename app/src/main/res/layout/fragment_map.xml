@@ -10,13 +10,14 @@
         android:id="@+id/materialCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="40dp"
-        app:cardBackgroundColor="@color/light_gray"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="20dp"
         app:cardElevation="50dp"
-        app:strokeColor="@color/light_gray">
+        app:strokeColor="@color/light_gray"
+        app:strokeWidth="1dp">
 
         <SearchView
             android:id="@+id/mapSearch"

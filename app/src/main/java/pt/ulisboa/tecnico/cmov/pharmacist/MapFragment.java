@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresPermission;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.Manifest;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -25,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
@@ -67,9 +70,32 @@ public class MapFragment extends Fragment {
 
                 @Override
                 public void onMapReady(@NonNull GoogleMap googleMap) {
+                    // Set map and zoom controls
                     map = googleMap;
-
+                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                     map.getUiSettings().setZoomControlsEnabled(true);
+
+                    // Get permission for current location
+                    onLocationPermissionGranted();
+
+                    // If permission was not granted, place a default position on map
+                    if (currentLocation == null) {
+
+                        String tagusLocation = "Instituto Superior Técnico - Taguspark";
+                        List<Address> addresses = new ArrayList<>();
+
+                        Geocoder geocoder = new Geocoder(getActivity());
+                        try {
+                            addresses = geocoder.getFromLocationName(tagusLocation, 1);
+                        } catch (IOException err) {
+                            err.printStackTrace();
+                        }
+
+                        Address tagusAddress = addresses.get(0);
+
+                        LatLng tagus = new LatLng(tagusAddress.getLatitude(), tagusAddress.getLongitude());
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(tagus, 17));
+                    }
 
                     // Set up search query listener
                     SearchView mapSearch = view.findViewById(R.id.mapSearch);
@@ -104,8 +130,6 @@ public class MapFragment extends Fragment {
                             return false;
                         }
                     });
-
-                    getLastLocation();
                 }
             });
         }
@@ -113,29 +137,35 @@ public class MapFragment extends Fragment {
         return view;
     }
 
-
-    private void getLastLocation() {
+    private void onLocationPermissionGranted() {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERMISSION_CODE);
             ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, FINE_PERMISSION_CODE);
             return;
         }
+
         map.setMyLocationEnabled(true);
+        map.getUiSettings().setMyLocationButtonEnabled(true);
+
+        // Customize position of current location button
+        View locationButton = ((View) view.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        rlp.setMargins(0, 0, 0, 300);
 
         Task<Location> task = client.getLastLocation();
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+        task.addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 if (location != null) {
                     currentLocation = location;
 
                     // Move map-related operations here
-                    LatLng tagus = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(tagus, 17));
+                    LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                 } else {
-                    // Handle case where location is null
                     Log.e(TAG, "getLastLocation: Location is null");
                 }
             }
@@ -147,8 +177,8 @@ public class MapFragment extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == FINE_PERMISSION_CODE) {// If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
-                Log.i(TAG, "location fine permission granted");
+                onLocationPermissionGranted();
+                Log.i(TAG, "Location fine permission granted");
 
             } else {
                 Toast.makeText(getActivity(), "No Permission to View Location. Please Allow!", Toast.LENGTH_SHORT).show();

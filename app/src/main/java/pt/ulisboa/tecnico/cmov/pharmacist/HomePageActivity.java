@@ -1,9 +1,12 @@
 package pt.ulisboa.tecnico.cmov.pharmacist;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -22,17 +25,21 @@ public class HomePageActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Ask for permissions
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, FINE_PERMISSION_CODE);
-        } else {
-            // Permissions are already granted
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.frame_layout, MapFragment.newInstance())
-                    .commit();
-        }
+        // Call map even before permissions (app must work regardless of current location)
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.map_frame_layout, MapFragment.newInstance())
+                .commit();
+
+        // Call add pharmacy
+        Button addPharmacyButton = findViewById(R.id.add_pharmacy_button);
+        addPharmacyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePageActivity.this, AddPharmacyActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

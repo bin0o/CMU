@@ -9,8 +9,8 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/login_back_button"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:background="@drawable/baseline_arrow_back_24"
         android:layout_alignParentTop="true"
         android:layout_marginTop="20dp"
@@ -56,6 +56,7 @@
             android:drawableStart="@drawable/baseline_alternate_email_24"
             android:drawablePadding="10dp"
             android:hint="@string/username"
+            android:textSize="15sp"
             android:inputType="text"
             android:paddingStart="20dp" />
 
@@ -69,6 +70,7 @@
             android:drawableStart="@drawable/baseline_password_24"
             android:drawablePadding="10dp"
             android:hint="@string/password"
+            android:textSize="15sp"
             android:inputType="textPassword"
             android:paddingStart="20dp" />
 

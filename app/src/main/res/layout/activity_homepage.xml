@@ -1,24 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".HomePageActivity">
     
     <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/toolbar"
         android:background="@color/ist_blue"
-        android:title="@string/app_name"
-        app:titleTextColor="@color/white"
-        android:titleMarginStart="30dp"
+        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        android:title="@string/app_name"
+        android:titleMarginStart="30dp"
+        app:titleTextColor="@color/white" />
 
     <FrameLayout
+        android:id="@+id/map_frame_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/frame_layout" />
+        android:layout_below="@id/toolbar"/>
 
-</LinearLayout>
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/map_frame_layout"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="30dp"
+        android:background="@color/pastel_blue"
+        app:cardCornerRadius="20dp"
+        app:strokeColor="@color/pastel_blue"
+        app:cardElevation="50dp">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/add_pharmacy_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/map_frame_layout"
+            android:background="@color/baby_blue"
+            android:drawableStart="@drawable/rounded_medication_24"
+            android:drawablePadding="8dp"
+            android:hint="Add Pharmacy"
+            android:paddingHorizontal="20dp"
+            android:textColorHint="@color/black" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+</RelativeLayout>
