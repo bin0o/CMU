@@ -88,7 +88,7 @@
 
 
         <Button
-            android:id="@+id/sign_up_button"
+            android:id="@+id/signup_button"
             android:layout_width="300dp"
             android:layout_height="70dp"
             android:layout_gravity="center"

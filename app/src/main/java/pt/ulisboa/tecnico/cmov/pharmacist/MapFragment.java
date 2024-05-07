@@ -79,7 +79,8 @@ public class MapFragment extends Fragment {
                     onLocationPermissionGranted();
 
                     // If permission was not granted, place a default position on map
-                    if (currentLocation == null) {
+                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                            ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                         String tagusLocation = "Instituto Superior Técnico - Taguspark";
                         List<Address> addresses = new ArrayList<>();

@@ -39,6 +39,7 @@
         android:textStyle="bold" />
 
     <LinearLayout
+        android:id="@+id/add_pharmacy_form"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/activity"
@@ -71,8 +72,36 @@
             android:paddingStart="20dp"
             android:textSize="15sp" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Location" />
+
+        <EditText
+            android:id="@+id/location"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/edit_text_bkg"
+            android:hint="Farmácia Progresso Taguspark"
+            android:inputType="text"
+            android:paddingStart="20dp"
+            android:textSize="15sp" />
+
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/add_pharmacy_button"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_below="@id/add_pharmacy_form"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/login_signup_button_bkg"
+        android:text="Add"
+        android:textSize="18sp" />
 
 
 
