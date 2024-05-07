@@ -32,7 +32,7 @@ public class LoginActivity extends ComponentActivity {
         setContentView(R.layout.activity_login);
 
         // Go back to Welcome page
-        Button back = findViewById(R.id.login_back_button);
+        Button back = findViewById(R.id.back_button);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
