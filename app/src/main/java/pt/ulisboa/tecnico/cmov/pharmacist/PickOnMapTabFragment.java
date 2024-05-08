@@ -5,6 +5,8 @@ import static pt.ulisboa.tecnico.cmov.pharmacist.MapFragment.tagusAddress;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 
 import androidx.core.app.ActivityCompat;
@@ -20,6 +22,10 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
+import java.util.List;
 
 public class PickOnMapTabFragment extends Fragment {
 
@@ -28,6 +34,8 @@ public class PickOnMapTabFragment extends Fragment {
     private MapView mapView;
 
     private GoogleMap map;
+
+    public static String pickOnMapAddress;
 
     public PickOnMapTabFragment() {
         // Required empty public constructor
@@ -74,7 +82,33 @@ public class PickOnMapTabFragment extends Fragment {
                     LatLng latLng = new LatLng(tagusAddress.getLatitude(), tagusAddress.getLongitude());
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                 }
-            }
+                map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+
+                        // Do something when map is clicked
+                        MarkerOptions markerOptions = new MarkerOptions();
+
+                        markerOptions.position(latLng);
+
+                        map.clear();
+
+                        Geocoder geocoder;
+                        List<Address> addresses;
+                        geocoder = new Geocoder(getActivity());
+
+                        try {
+                            addresses = geocoder.getFromLocation(markerOptions.getPosition().latitude, markerOptions.getPosition().longitude, 1);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        pickOnMapAddress = addresses.get(0).getAddressLine(0);
+
+                        map.addMarker(markerOptions);
+                }
+            });
+        }
         });
 
         return view;

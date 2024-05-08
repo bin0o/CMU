@@ -7,6 +7,8 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -87,27 +89,42 @@ public class AddPharmacyActivity extends AppCompatActivity {
         addPharmacyButton.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-//                 EditText pharmacyNameEditText = findViewById(R.id.name);
-//                 String pharmacyName = pharmacyNameEditText.getText().toString();
-//
-//                 EditText pharmacyAddressEditText = findViewById(R.id.location);
-//                 String pharmacyAddress = pharmacyAddressEditText.getText().toString();
-//
-//                 // Create a new Pharmacy object
-//                 Pharmacy pharmacy = new Pharmacy(pharmacyName, pharmacyAddress);
-//
-//                 // Push the Pharmacy object to the "Pharmacy" node
-//                 mDatabase.child("Pharmacy").push().setValue(pharmacy)
-//                         .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                             @Override
-//                             public void onComplete(@NonNull Task<Void> task) {
-//                                 if (task.isSuccessful()) {
-//                                     Log.d(TAG, "addPharmacy: Pharmacy added successfully");
-//                                 } else {
-//                                     Log.e(TAG, "addPharmacy: Failed to add pharmacy", task.getException());
-//                                 }
-//                             }
-//                         });
+                 EditText pharmacyNameEditText = findViewById(R.id.name);
+                 String pharmacyName = pharmacyNameEditText.getText().toString();
+
+                 String address = null;
+
+                 int tabSelected = addressTabLayout.getSelectedTabPosition();
+
+                 if (tabSelected == 0) {
+                    address = PickOnMapTabFragment.pickOnMapAddress;
+                 }
+                 else if (tabSelected == 1) {
+                    TextView pharmacyAddressTextView = findViewById(R.id.current_location_text);
+                    address = pharmacyAddressTextView.getText().toString();
+                 }
+                 else if (tabSelected == 2) {
+                     EditText pharmacyAddressEditText = findViewById(R.id.manual_address);
+                     address = pharmacyAddressEditText.getText().toString();
+                 }
+
+                 // Create a new Pharmacy object
+                 Pharmacy pharmacy = new Pharmacy(pharmacyName, address);
+
+                // Push the Pharmacy object to the "Pharmacy" node
+                 mDatabase.child("Pharmacy").push().setValue(pharmacy)
+                         .addOnCompleteListener(new OnCompleteListener<Void>() {
+                             @Override
+                             public void onComplete(@NonNull Task<Void> task) {
+                                 if (task.isSuccessful()) {
+                                     Log.d(TAG, "addPharmacy: Pharmacy added successfully");
+                                 } else {
+                                     Log.e(TAG, "addPharmacy: Failed to add pharmacy", task.getException());
+                                 }
+                             }
+                         });
+
+                 Toast.makeText(AddPharmacyActivity.this, "Pharmacy added successfully", Toast.LENGTH_SHORT).show();
 
                  Log.i(TAG, "Going back to Home Page");
                  Intent intent = new Intent(AddPharmacyActivity.this, HomePageActivity.class);
