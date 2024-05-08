@@ -87,7 +87,7 @@ public class MapFragment extends Fragment {
                 public void onMapReady(@NonNull GoogleMap googleMap) {
                     // Set map and zoom controls
                     map = googleMap;
-                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                    map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                     map.getUiSettings().setZoomControlsEnabled(true);
 
                     // Get permission for current location
@@ -102,8 +102,9 @@ public class MapFragment extends Fragment {
                                 Pharmacy pharmacy = pharmacySnapshot.getValue(Pharmacy.class);
                                 if (pharmacy != null) {
                                     String address = pharmacy.getAddress();
-                                    geocodeAddress(address);
-                                    Log.d(TAG, "Pharmacy: " + pharmacy.getName());
+                                    String name = pharmacy.getName();
+                                    geocodeAddress(address, name);
+                                    Log.d(TAG, "Pharmacy: " + name + ", Address: " + address);
                                 }
                             }
                         }
@@ -174,14 +175,14 @@ public class MapFragment extends Fragment {
         return view;
     }
 
-    private void geocodeAddress(String address) {
+    private void geocodeAddress(String address, String pharmacyName) {
         Geocoder geocoder = new Geocoder(getActivity());
         try {
             List<Address> addresses = geocoder.getFromLocationName(address, 1);
             if (!addresses.isEmpty()) {
                 Address location = addresses.get(0);
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                map.addMarker(new MarkerOptions().position(latLng).title(address));
+                map.addMarker(new MarkerOptions().position(latLng).title(pharmacyName));
             } else {
                 Log.e(TAG, "Address not found: " + address);
             }
