@@ -92,7 +92,7 @@
             android:layout_width="0dp"
             android:layout_height="55dp"
             android:background="@drawable/login_signup_button_bkg"
-            android:text="@string/sign_up"
+            android:text="@string/sign_in"
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/imageView2"
             app:layout_constraintEnd_toEndOf="parent"

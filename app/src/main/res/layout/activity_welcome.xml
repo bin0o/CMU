@@ -61,66 +61,38 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="wrap_content"
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/login_button"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                app:cardBackgroundColor="@color/black"
-                app:cardCornerRadius="50dp"
-                app:strokeColor="@color/black">
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/login_button"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:background="@color/black"
-                    android:text="@string/sign_in"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="50dp"
-                app:strokeColor="@color/white">
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/sign_up_button"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:text="@string/sign_up"
-                    android:textAllCaps="false"
-                    android:textColor="@color/black" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-
-        </LinearLayout>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="20dp"
-            app:cardBackgroundColor="@color/baby_blue"
-            app:cardCornerRadius="50dp"
-            app:strokeColor="@color/baby_blue">
+                android:layout_margin="15dp"
+                android:background="@drawable/signin_button_bkg"
+                android:text="@string/sign_in"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/guest_button"
-                android:layout_width="330dp"
+                android:id="@+id/sign_up_button"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:background="@color/baby_blue"
-                android:text="@string/continue_as_a_guest"
+                android:layout_margin="15dp"
+                android:background="@drawable/signup_button_bkg"
+                android:text="@string/sign_up"
                 android:textAllCaps="false"
                 android:textColor="@color/black" />
 
-        </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/guest_button"
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/guest_button_bkg"
+            android:text="@string/continue_as_a_guest"
+            android:textAllCaps="false"
+            android:textColor="@color/black" />
 
     </LinearLayout>
 
