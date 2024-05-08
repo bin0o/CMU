@@ -41,13 +41,19 @@ public class MapFragment extends Fragment {
 
     private final int FINE_PERMISSION_CODE = 1;
 
-    View view;
+    private View view;
 
-    GoogleMap map;
+    private GoogleMap map;
 
-    FusedLocationProviderClient client;
+    public FusedLocationProviderClient client;
 
-    Location currentLocation;
+    public static Location currentLocation;
+
+    public static Address tagusAddress;
+
+    public MapFragment() {
+        // Required empty public constructor
+    }
 
     public static Fragment newInstance() {
         return new MapFragment();
@@ -92,7 +98,7 @@ public class MapFragment extends Fragment {
                             err.printStackTrace();
                         }
 
-                        Address tagusAddress = addresses.get(0);
+                        tagusAddress = addresses.get(0);
 
                         LatLng tagus = new LatLng(tagusAddress.getLatitude(), tagusAddress.getLongitude());
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(tagus, 17));
