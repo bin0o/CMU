@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.pharmacist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -92,7 +93,12 @@ public class AddPharmacyActivity extends AppCompatActivity {
                  EditText pharmacyNameEditText = findViewById(R.id.name);
                  String pharmacyName = pharmacyNameEditText.getText().toString();
 
-                 String address = null;
+                 if (TextUtils.isEmpty(pharmacyName)){
+                     Toast.makeText(AddPharmacyActivity.this, "Please enter the name of the pharmacy!", Toast.LENGTH_SHORT).show();
+                     return;
+                 }
+
+                 String address = "";
 
                  int tabSelected = addressTabLayout.getSelectedTabPosition();
 
@@ -106,6 +112,10 @@ public class AddPharmacyActivity extends AppCompatActivity {
                  else if (tabSelected == 2) {
                      EditText pharmacyAddressEditText = findViewById(R.id.manual_address);
                      address = pharmacyAddressEditText.getText().toString();
+                     if (TextUtils.isEmpty(address)){
+                         Toast.makeText(AddPharmacyActivity.this, "Please enter the address of the pharmacy!", Toast.LENGTH_SHORT).show();
+                         return;
+                     }
                  }
 
                  // Create a new Pharmacy object
