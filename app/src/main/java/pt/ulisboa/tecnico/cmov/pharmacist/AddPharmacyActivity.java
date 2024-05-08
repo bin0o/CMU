@@ -85,6 +85,16 @@ public class AddPharmacyActivity extends AppCompatActivity {
             }
         });
 
+        // Add a photo
+        Button photoButton = findViewById(R.id.take_photo_button);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
         // Adding a new Pharmacy
         Button addPharmacyButton = findViewById(R.id.add_pharmacy_button);
         addPharmacyButton.setOnClickListener(new View.OnClickListener() {
@@ -112,10 +122,11 @@ public class AddPharmacyActivity extends AppCompatActivity {
                  else if (tabSelected == 2) {
                      EditText pharmacyAddressEditText = findViewById(R.id.manual_address);
                      address = pharmacyAddressEditText.getText().toString();
-                     if (TextUtils.isEmpty(address)){
-                         Toast.makeText(AddPharmacyActivity.this, "Please enter the address of the pharmacy!", Toast.LENGTH_SHORT).show();
-                         return;
-                     }
+                 }
+
+                 if (TextUtils.isEmpty(address)){
+                     Toast.makeText(AddPharmacyActivity.this, "Please enter the address of the pharmacy!", Toast.LENGTH_SHORT).show();
+                     return;
                  }
 
                  // Create a new Pharmacy object
