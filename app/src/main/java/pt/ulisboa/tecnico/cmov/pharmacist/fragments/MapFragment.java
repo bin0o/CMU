@@ -155,27 +155,28 @@ public class MapFragment extends Fragment {
 
                             final String[] queryAddress = {query};
 
-                            Query queryMedicine = mDatabase.child("Medicines").child(queryAddress[0]);
+                            Query queryMedicine = mDatabase.child("Medicines");
                             queryMedicine.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                                    // check if the medicine exists in database, if not, check if it's marker and finally check if it is an address
-                                    if (dataSnapshot.exists()) {
-                                    String medicineName = dataSnapshot.getKey();
-                                    Map<String, Integer> pharmacies = new HashMap<>();
-                                    for (DataSnapshot pharmacySnapshot : dataSnapshot.getChildren()) {
-                                        String pharmacyName = pharmacySnapshot.getKey();
-                                        Integer quantity = pharmacySnapshot.getValue(Integer.class);
-                                        if (pharmacyName != null && quantity != null) {
-                                            pharmacies.put(pharmacyName, quantity);
-                                        }
-                                    }
-                                    Medicine medicine = new Medicine(pharmacies);
-                                    Log.d(TAG, "Medicine: " + medicineName + ", Pharmacies: " + medicine.getPharmacyNames());
+                                    for (DataSnapshot medicineSnapshot : dataSnapshot.getChildren()) {
+                                        String key = medicineSnapshot.getKey();
+                                        if (key != null && key.contains(queryAddress[0])) {
+                                            Map<String, Integer> pharmacies = new HashMap<>();
+                                            for (DataSnapshot pharmacySnapshot : medicineSnapshot.getChildren()) {
+                                                String pharmacyName = pharmacySnapshot.getKey();
+                                                Integer quantity = pharmacySnapshot.getValue(Integer.class);
+                                                if (pharmacyName != null && quantity != null) {
+                                                    pharmacies.put(pharmacyName, quantity);
+                                                }
+                                            }
+                                            Medicine medicine = new Medicine(pharmacies);
+                                            Log.d(TAG, "Medicine: " + key + ", Pharmacies: " + medicine.getPharmacyNames());
 
-                                    queryAddress[0] = findClosestAddressToCurrentLocation(medicine.getPharmacyNames());
-                                    Log.d(TAG, "Closest Pharmacy: " + queryAddress[0]);
+                                            queryAddress[0] = findClosestAddressToCurrentLocation(medicine.getPharmacyNames());
+                                            Log.d(TAG, "Closest Pharmacy: " + queryAddress[0]);
+                                        }
                                     }
 
                                     // Iterate through markers and check if their names match the search query
@@ -187,7 +188,7 @@ public class MapFragment extends Fragment {
                                         }
                                     }
 
-                                    LatLng latLng = geocodeAddress(queryAddress[0]);
+                                    LatLng latLng = geocodeAddress(query);
                                     if (latLng != null) {
                                         map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                                     }
