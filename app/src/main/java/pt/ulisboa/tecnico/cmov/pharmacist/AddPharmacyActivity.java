@@ -35,6 +35,10 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Pharmacy;
+import pt.ulisboa.tecnico.cmov.pharmacist.adapter.ViewPagerAdpater;
+import pt.ulisboa.tecnico.cmov.pharmacist.fragments.PickOnMapTabFragment;
+
 public class AddPharmacyActivity extends AppCompatActivity {
 
     public static final int CAMERA_PERMISSION_CODE = 101;

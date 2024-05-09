@@ -1,7 +1,7 @@
-package pt.ulisboa.tecnico.cmov.pharmacist;
+package pt.ulisboa.tecnico.cmov.pharmacist.fragments;
 
-import static pt.ulisboa.tecnico.cmov.pharmacist.MapFragment.currentLocation;
-import static pt.ulisboa.tecnico.cmov.pharmacist.MapFragment.tagusAddress;
+import static pt.ulisboa.tecnico.cmov.pharmacist.fragments.MapFragment.currentLocation;
+import static pt.ulisboa.tecnico.cmov.pharmacist.fragments.MapFragment.tagusAddress;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -26,6 +26,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.List;
+
+import pt.ulisboa.tecnico.cmov.pharmacist.R;
 
 public class PickOnMapTabFragment extends Fragment {
 

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CurrentLocationTabFragment">
+    tools:context=".fragments.CurrentLocationTabFragment">
 
     <TextView
         android:id="@+id/current_location_text"

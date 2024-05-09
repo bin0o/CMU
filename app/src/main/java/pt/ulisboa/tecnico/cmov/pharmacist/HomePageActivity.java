@@ -9,6 +9,8 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import pt.ulisboa.tecnico.cmov.pharmacist.fragments.MapFragment;
+
 public class HomePageActivity extends AppCompatActivity {
     private final String TAG = "MainActivity";
 

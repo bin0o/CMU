@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.pharmacist;
+package pt.ulisboa.tecnico.cmov.pharmacist.fragments;
 
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -7,7 +7,6 @@ import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresPermission;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
@@ -30,7 +29,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -39,12 +37,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.installations.Utils;
 
 import java.io.IOException;
-import java.security.KeyPair;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Medicine;
+import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Pharmacy;
+import pt.ulisboa.tecnico.cmov.pharmacist.R;
 
 public class MapFragment extends Fragment {
 
@@ -153,41 +155,49 @@ public class MapFragment extends Fragment {
 
                             final String[] queryAddress = {query};
 
-                            // Retrieve pharmacy data from Firebase Realtime Database
-                            Query queryMedicine = mDatabase.child("Medicines");
+                            Query queryMedicine = mDatabase.child("Medicines").child(queryAddress[0]);
                             queryMedicine.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot medicineSnapshot : dataSnapshot.getChildren()) {
-                                        Medicine medicine = medicineSnapshot.getValue(Medicine.class);
-                                        if (medicine != null && TextUtils.equals(medicine.getName(), queryAddress[0])) {
-                                            Log.d(TAG, "Medicine: " + medicine.getName() + ", Pharmacy: " + medicine.getPharmacyName());
-                                            queryAddress[0] = medicine.getPharmacyName();
+
+                                    // check if the medicine exists in database, if not, check if it's marker and finally check if it is an address
+                                    if (dataSnapshot.exists()) {
+                                    String medicineName = dataSnapshot.getKey();
+                                    Map<String, Integer> pharmacies = new HashMap<>();
+                                    for (DataSnapshot pharmacySnapshot : dataSnapshot.getChildren()) {
+                                        String pharmacyName = pharmacySnapshot.getKey();
+                                        Integer quantity = pharmacySnapshot.getValue(Integer.class);
+                                        if (pharmacyName != null && quantity != null) {
+                                            pharmacies.put(pharmacyName, quantity);
                                         }
+                                    }
+                                    Medicine medicine = new Medicine(pharmacies);
+                                    Log.d(TAG, "Medicine: " + medicineName + ", Pharmacies: " + medicine.getPharmacyNames());
+
+                                    queryAddress[0] = findClosestAddressToCurrentLocation(medicine.getPharmacyNames());
+                                    Log.d(TAG, "Closest Pharmacy: " + queryAddress[0]);
                                     }
 
                                     // Iterate through markers and check if their names match the search query
                                     for (MarkerOptions marker : markers) {
                                         if (marker.getTitle().toLowerCase().contains(queryAddress[0].toLowerCase())) {
-                                            // Optionally, move camera to the marker's position
+                                            // Move camera to the marker's position
                                             map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
                                             return;
                                         }
                                     }
 
-
                                     LatLng latLng = geocodeAddress(queryAddress[0]);
                                     if (latLng != null) {
                                         map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                                     }
+
                                 }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
                                     Log.e(TAG, "Failed to retrieve pharmacy data: " + databaseError.getMessage());
                                 }
                             });
-
-
 
                             return false;
                         }
@@ -219,6 +229,34 @@ public class MapFragment extends Fragment {
             Log.e(TAG, "Geocoding failed: " + e.getMessage());
         }
         return null;
+    }
+
+    private String findClosestAddressToCurrentLocation(List<String> addressList) {
+
+        double minDistance = Double.MAX_VALUE;
+        String closestAddress = "";
+
+        for (String address : addressList) {
+            for (MarkerOptions marker : markers) {
+                if (marker.getTitle().toLowerCase().contains(address.toLowerCase())) {
+                    Location addressLocation = new Location("");
+                    addressLocation.setLatitude(marker.getPosition().latitude);
+                    addressLocation.setLongitude(marker.getPosition().longitude);
+
+                    float distance = currentLocation.distanceTo(addressLocation);
+                    Log.d(TAG, "Distance to " + address + ": " + distance);
+
+                    // Check if this address is closer than the previous closest address
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestAddress = address;
+                    }
+                }
+            }
+
+
+        }
+        return closestAddress;
     }
 
     private void onLocationPermissionGranted() {

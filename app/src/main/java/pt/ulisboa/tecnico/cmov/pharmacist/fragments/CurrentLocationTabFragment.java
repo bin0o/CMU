@@ -1,6 +1,6 @@
-package pt.ulisboa.tecnico.cmov.pharmacist;
+package pt.ulisboa.tecnico.cmov.pharmacist.fragments;
 
-import static pt.ulisboa.tecnico.cmov.pharmacist.MapFragment.currentLocation;
+import static pt.ulisboa.tecnico.cmov.pharmacist.fragments.MapFragment.currentLocation;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -16,11 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-
 import java.io.IOException;
 import java.util.List;
+
+import pt.ulisboa.tecnico.cmov.pharmacist.R;
 
 public class CurrentLocationTabFragment extends Fragment {
 
