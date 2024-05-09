@@ -174,8 +174,16 @@ public class MapFragment extends Fragment {
                                             Medicine medicine = new Medicine(pharmacies);
                                             Log.d(TAG, "Medicine: " + key + ", Pharmacies: " + medicine.getPharmacyNames());
 
-                                            queryAddress[0] = findClosestAddressToCurrentLocation(medicine.getPharmacyNames());
-                                            Log.d(TAG, "Closest Pharmacy: " + queryAddress[0]);
+                                            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                                                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                                // Get the first pharmacy name because the user has not granted permission for location
+                                                queryAddress[0] = medicine.getPharmacyNames().get(0);
+                                                Log.d(TAG, "First Farmacy: " + queryAddress[0]);
+                                            }
+                                            else {
+                                                queryAddress[0] = findClosestAddressToCurrentLocation(medicine.getPharmacyNames());
+                                                Log.d(TAG, "Closest Pharmacy: " + queryAddress[0]);
+                                            }
                                         }
                                     }
 
