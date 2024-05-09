@@ -11,6 +11,7 @@ import androidx.annotation.RequiresPermission;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,8 +39,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.installations.Utils;
 
 import java.io.IOException;
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +63,8 @@ public class MapFragment extends Fragment {
     public static Address tagusAddress;
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+
+    private List<MarkerOptions> markers = new ArrayList<>();
 
     public MapFragment() {
         // Required empty public constructor
@@ -103,7 +109,11 @@ public class MapFragment extends Fragment {
                                 if (pharmacy != null) {
                                     String address = pharmacy.getAddress();
                                     String name = pharmacy.getName();
-                                    geocodeAddress(address, name);
+                                    LatLng latLng = geocodeAddress(address);
+
+                                    MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(name);
+                                    markers.add(markerOptions);
+                                    map.addMarker(markerOptions);
                                     Log.d(TAG, "Pharmacy: " + name + ", Address: " + address);
                                 }
                             }
@@ -140,26 +150,45 @@ public class MapFragment extends Fragment {
                     mapSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
-                            String location = mapSearch.getQuery().toString();
-                            List<Address> addresses = new ArrayList<>();
 
-                            // Use Geocoder to get location from name
-                            Geocoder geocoder = new Geocoder(getActivity());
-                            try {
-                                addresses = geocoder.getFromLocationName(location, 1);
-                            } catch (IOException e) {
-                                Log.e(TAG, "Location not Found!");
-                            }
+                            final String[] queryAddress = {query};
 
-                            if (addresses != null) {
-                                Address address = addresses.get(0);
+                            // Retrieve pharmacy data from Firebase Realtime Database
+                            Query queryMedicine = mDatabase.child("Medicines");
+                            queryMedicine.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot medicineSnapshot : dataSnapshot.getChildren()) {
+                                        Medicine medicine = medicineSnapshot.getValue(Medicine.class);
+                                        if (medicine != null && TextUtils.equals(medicine.getName(), queryAddress[0])) {
+                                            Log.d(TAG, "Medicine: " + medicine.getName() + ", Pharmacy: " + medicine.getPharmacyName());
+                                            queryAddress[0] = medicine.getPharmacyName();
+                                        }
+                                    }
 
-                                // Move camera to searched location
-                                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
-                            } else {
-                                Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
-                            }
+                                    // Iterate through markers and check if their names match the search query
+                                    for (MarkerOptions marker : markers) {
+                                        if (marker.getTitle().toLowerCase().contains(queryAddress[0].toLowerCase())) {
+                                            // Optionally, move camera to the marker's position
+                                            map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+                                            return;
+                                        }
+                                    }
+
+
+                                    LatLng latLng = geocodeAddress(queryAddress[0]);
+                                    if (latLng != null) {
+                                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    Log.e(TAG, "Failed to retrieve pharmacy data: " + databaseError.getMessage());
+                                }
+                            });
+
+
+
                             return false;
                         }
 
@@ -175,20 +204,21 @@ public class MapFragment extends Fragment {
         return view;
     }
 
-    private void geocodeAddress(String address, String pharmacyName) {
+    private LatLng geocodeAddress(String address) {
         Geocoder geocoder = new Geocoder(getActivity());
         try {
             List<Address> addresses = geocoder.getFromLocationName(address, 1);
             if (!addresses.isEmpty()) {
                 Address location = addresses.get(0);
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                map.addMarker(new MarkerOptions().position(latLng).title(pharmacyName));
+                return new LatLng(location.getLatitude(), location.getLongitude());
             } else {
                 Log.e(TAG, "Address not found: " + address);
+                Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
             }
         } catch (IOException e) {
             Log.e(TAG, "Geocoding failed: " + e.getMessage());
         }
+        return null;
     }
 
     private void onLocationPermissionGranted() {
