@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.pharmacist.fragments;
 
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -26,6 +27,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -43,6 +46,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
 
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Medicine;
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Pharmacy;
@@ -67,6 +71,9 @@ public class MapFragment extends Fragment {
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     private List<MarkerOptions> markers = new ArrayList<>();
+
+    // Names of the favorite pharmacies of the logged in user
+    private HashSet<String> favoritePharmacies = new HashSet<String>();
 
     public MapFragment() {
         // Required empty public constructor
@@ -101,31 +108,66 @@ public class MapFragment extends Fragment {
                     // Get permission for current location
                     onLocationPermissionGranted();
 
-                    // Retrieve pharmacy data from Firebase Realtime Database
-                    Query query = mDatabase.child("Pharmacy");
+                    // Todo: ir buscar ao mAuth o email e dar split no @ para por no primeiro child
+                    // Retrieve favorite pharmacies for the authenticated user
+                    Query query = mDatabase.child("UsersFavoritePharmacies").child("tiago").child("favs");
                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot pharmacySnapshot : dataSnapshot.getChildren()) {
-                                Pharmacy pharmacy = pharmacySnapshot.getValue(Pharmacy.class);
-                                if (pharmacy != null) {
-                                    String address = pharmacy.getAddress();
-                                    String name = pharmacy.getName();
-                                    LatLng latLng = geocodeAddress(address);
+                            // Clear previous favoritePharmacies
+                            favoritePharmacies.clear();
 
-                                    MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(name);
-                                    markers.add(markerOptions);
-                                    map.addMarker(markerOptions);
-                                    Log.d(TAG, "Pharmacy: " + name + ", Address: " + address);
+                            // Iterate through the favorite pharmacies and add markers
+                            for (DataSnapshot favSnapshot : dataSnapshot.getChildren()) {
+                                String favPharmacy = favSnapshot.getValue(String.class);
+                                if (favPharmacy != null) {
+                                    favoritePharmacies.add(favPharmacy);
                                 }
                             }
+                            Log.e(TAG, "Favorite pharmacies: " + favoritePharmacies);
+
+                            // Retrieve pharmacy data from Firebase Realtime Database
+                            Query queryPharmacies = mDatabase.child("Pharmacy");
+                            queryPharmacies.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot pharmacySnapshot : dataSnapshot.getChildren()) {
+                                        Pharmacy pharmacy = pharmacySnapshot.getValue(Pharmacy.class);
+                                        if (pharmacy != null) {
+                                            String address = pharmacy.getAddress();
+                                            String name = pharmacy.getName();
+                                            LatLng latLng = geocodeAddress(address);
+
+                                            // Check if the pharmacy name is in the favorite pharmacies set
+                                            if (favoritePharmacies.contains(name)) {
+                                                // set marker color to golden
+                                                MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(name).icon(getMarkerIcon("#FFD700"));
+                                                markers.add(markerOptions);
+                                                map.addMarker(markerOptions);
+                                            } else {
+                                                // Otherwise, use default marker color
+                                                MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(name);
+                                                markers.add(markerOptions);
+                                                map.addMarker(markerOptions);
+                                            }
+                                            Log.d(TAG, "Pharmacy: " + name + ", Address: " + address);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    Log.e(TAG, "Failed to retrieve pharmacy data: " + databaseError.getMessage());
+                                }
+                            });
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.e(TAG, "Failed to retrieve pharmacy data: " + databaseError.getMessage());
+                            Log.e(TAG, "Failed to retrieve favorite pharmacies: " + databaseError.getMessage());
                         }
                     });
+
 
                     // If permission was not granted, place a default position on map
                     if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -301,6 +343,12 @@ public class MapFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private BitmapDescriptor getMarkerIcon(String color) {
+        float[] hsv = new float[3];
+        Color.colorToHSV(Color.parseColor(color), hsv);
+        return BitmapDescriptorFactory.defaultMarker(hsv[0]);
     }
 
     @Override
