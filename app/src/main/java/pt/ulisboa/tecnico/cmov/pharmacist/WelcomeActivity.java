@@ -32,6 +32,8 @@ public class WelcomeActivity extends ComponentActivity {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "Logging in as a guest");
+                mAuth.signInAnonymously();
+
                 Intent intent = new Intent(WelcomeActivity.this, HomePageActivity.class);
                 startActivity(intent);
             }
@@ -66,9 +68,9 @@ public class WelcomeActivity extends ComponentActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), HomePageActivity.class);
+            Intent intent = new Intent(WelcomeActivity.this, HomePageActivity.class);
             startActivity(intent);
-            finish();
+            super.finish();
         }
     }
 }
