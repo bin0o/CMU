@@ -3,7 +3,7 @@
 Our application works with Firebase so there's no need to connect to anything else, just run the code and it's done.
 
 # Funcionalities:
-- Creating and Account with **Sign Up**, Logging In with **Sign In** and entering as a Guest with **Continue as a Guest** Button.
+- Creating an Account with **Sign Up**, Logging In with **Sign In** and entering as a Guest with **Continue as a Guest** Button.
 - Viewing the Pharmacies in the Map (there are already a few on the database). Including your favorites that will appear in a golden marker (adding a farmacy to your favorites is not yet implemented).
 - Searching for Street names.
 - Searching for Pharmacy Names (that exist in the database).
