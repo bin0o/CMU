@@ -29,6 +29,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -78,6 +79,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     // Names of the favorite pharmacies of the logged in user
     private HashSet<String> favoritePharmacies = new HashSet<String>();
 
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+
+    private CameraPosition mCameraPosition;
+
+    private boolean isCameraPositionSaved = false;
+
     public MapFragment() {
         // Required empty public constructor
     }
@@ -92,110 +99,68 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        client = LocationServices.getFusedLocationProviderClient(getActivity());
-
-        SupportMapFragment supportMapFragment = (SupportMapFragment)
-                getChildFragmentManager().findFragmentById(R.id.map);
-
         // Initialize FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
 
+        client = LocationServices.getFusedLocationProviderClient(getActivity());
+
+        if (savedInstanceState != null) {
+            mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+        }
+
+        SupportMapFragment supportMapFragment = (SupportMapFragment)
+                getChildFragmentManager().findFragmentById(R.id.map);
 
         if (supportMapFragment != null) {
             supportMapFragment.getMapAsync(this);
         }
         return view;
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (map != null) {
+            outState.putParcelable(KEY_CAMERA_POSITION, map.getCameraPosition());
+        }
+    }
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        // Set map and zoom controls
         map = googleMap;
         map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         map.getUiSettings().setZoomControlsEnabled(true);
 
-        // Get permission for current location
-        onLocationPermissionGranted();
-
-        // Retrieve favorite pharmacies for the authenticated user
-        Query query = mDatabase.child("UsersFavoritePharmacies").child(mAuth.getCurrentUser().getUid()).child("favs");
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // Clear previous favoritePharmacies
-                favoritePharmacies.clear();
-
-                // Iterate through the favorite pharmacies and add markers
-                for (DataSnapshot favSnapshot : dataSnapshot.getChildren()) {
-                    String favPharmacy = favSnapshot.getValue(String.class);
-                    if (favPharmacy != null) {
-                        favoritePharmacies.add(favPharmacy);
-                    }
-                }
-                Log.e(TAG, "Favorite pharmacies: " + favoritePharmacies);
-
-                // Retrieve pharmacy data from Firebase Realtime Database
-                Query queryPharmacies = mDatabase.child("Pharmacy");
-                queryPharmacies.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot pharmacySnapshot : dataSnapshot.getChildren()) {
-                            Pharmacy pharmacy = pharmacySnapshot.getValue(Pharmacy.class);
-                            if (pharmacy != null) {
-                                String address = pharmacy.getAddress();
-                                String name = pharmacy.getName();
-                                LatLng latLng = geocodeAddress(address);
-
-                                // Check if the pharmacy name is in the favorite pharmacies set
-                                if (favoritePharmacies.contains(name)) {
-                                    // set marker color to golden
-                                    MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(name).icon(getMarkerIcon("#FFD700"));
-                                    markers.add(markerOptions);
-                                    map.addMarker(markerOptions);
-                                } else {
-                                    // Otherwise, use default marker color
-                                    MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(name);
-                                    markers.add(markerOptions);
-                                    map.addMarker(markerOptions);
-                                }
-                                Log.d(TAG, "Pharmacy: " + name + ", Address: " + address);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e(TAG, "Failed to retrieve pharmacy data: " + databaseError.getMessage());
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "Failed to retrieve favorite pharmacies: " + databaseError.getMessage());
-            }
-        });
-
-
-        // If permission was not granted, place a default position on map
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            String tagusLocation = "Instituto Superior Técnico - Taguspark";
-            List<Address> addresses = new ArrayList<>();
-
-            Geocoder geocoder = new Geocoder(getActivity());
-            try {
-                addresses = geocoder.getFromLocationName(tagusLocation, 1);
-            } catch (IOException err) {
-                err.printStackTrace();
-            }
-
-            tagusAddress = addresses.get(0);
-
-            LatLng tagus = new LatLng(tagusAddress.getLatitude(), tagusAddress.getLongitude());
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(tagus, 17));
+        if (mCameraPosition != null) {
+            map.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+            isCameraPositionSaved = true;
+        } else {
+            onLocationPermissionGranted();
+            loadFavoritePharmacies();
         }
 
+        setupMapInteraction();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (map != null) {
+            mCameraPosition = map.getCameraPosition();
+            isCameraPositionSaved = true;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (map != null && mCameraPosition != null) {
+            map.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+            isCameraPositionSaved = true;
+        }
+    }
+
+    public void setupMapInteraction() {
         // Set up clicking on markers
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -212,68 +177,132 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mapSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-
-                final String[] queryAddress = {query};
-
-                Query queryMedicine = mDatabase.child("Medicines");
-                queryMedicine.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        for (DataSnapshot medicineSnapshot : dataSnapshot.getChildren()) {
-                            String key = medicineSnapshot.getKey();
-                            if (key != null && key.contains(queryAddress[0])) {
-                                Map<String, Integer> pharmacies = new HashMap<>();
-                                for (DataSnapshot pharmacySnapshot : medicineSnapshot.getChildren()) {
-                                    String pharmacyName = pharmacySnapshot.getKey();
-                                    Integer quantity = pharmacySnapshot.getValue(Integer.class);
-                                    if (pharmacyName != null && quantity != null) {
-                                        pharmacies.put(pharmacyName, quantity);
-                                    }
-                                }
-                                Medicine medicine = new Medicine(pharmacies);
-                                Log.d(TAG, "Medicine: " + key + ", Pharmacies: " + medicine.getPharmacyNames());
-
-                                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                                        ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                    // Get the first pharmacy name because the user has not granted permission for location
-                                    queryAddress[0] = medicine.getPharmacyNames().get(0);
-                                    Log.d(TAG, "First Farmacy: " + queryAddress[0]);
-                                }
-                                else {
-                                    queryAddress[0] = findClosestAddressToCurrentLocation(medicine.getPharmacyNames());
-                                    Log.d(TAG, "Closest Pharmacy: " + queryAddress[0]);
-                                }
-                            }
-                        }
-
-                        // Iterate through markers and check if their names match the search query
-                        for (MarkerOptions marker : markers) {
-                            if (marker.getTitle().toLowerCase().contains(queryAddress[0].toLowerCase())) {
-                                // Move camera to the marker's position
-                                map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
-                                return;
-                            }
-                        }
-
-                        LatLng latLng = geocodeAddress(query);
-                        if (latLng != null) {
-                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
-                        }
-
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e(TAG, "Failed to retrieve medicine data: " + databaseError.getMessage());
-                    }
-                });
-
+                search(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
+            }
+        });
+    }
+
+    public void search(String query) {
+        final String[] queryAddress = {query};
+
+        Query queryMedicine = mDatabase.child("Medicines");
+        queryMedicine.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot medicineSnapshot : dataSnapshot.getChildren()) {
+                    String key = medicineSnapshot.getKey();
+                    if (key != null && key.toLowerCase().contains(queryAddress[0].toLowerCase())) {
+                        Map<String, Integer> pharmacies = new HashMap<>();
+                        for (DataSnapshot pharmacySnapshot : medicineSnapshot.getChildren()) {
+                            String pharmacyName = pharmacySnapshot.getKey();
+                            Integer quantity = pharmacySnapshot.getValue(Integer.class);
+                            if (pharmacyName != null && quantity != null) {
+                                pharmacies.put(pharmacyName, quantity);
+                            }
+                        }
+                        Medicine medicine = new Medicine(pharmacies);
+                        Log.d(TAG, "Medicine: " + key + ", Pharmacies: " + medicine.getPharmacyNames());
+
+                        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // Get the first pharmacy name because the user has not granted permission for location
+                            queryAddress[0] = medicine.getPharmacyNames().get(0);
+                            Log.d(TAG, "First Farmacy: " + queryAddress[0]);
+                        }
+                        else {
+                            queryAddress[0] = findClosestAddressToCurrentLocation(medicine.getPharmacyNames());
+                            Log.d(TAG, "Closest Pharmacy: " + queryAddress[0]);
+                        }
+                    }
+                }
+
+                // Iterate through markers and check if their names match the search query
+                for (MarkerOptions marker : markers) {
+                    if (marker.getTitle().toLowerCase().contains(queryAddress[0].toLowerCase())) {
+                        // Move camera to the marker's position
+                        map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+                        return;
+                    }
+                }
+
+                LatLng latLng = geocodeAddress(query);
+                if (latLng != null) {
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+                }
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Failed to retrieve medicine data: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    public void loadFavoritePharmacies() {
+        // Retrieve favorite pharmacies for the authenticated user
+        Query query = mDatabase.child("UsersFavoritePharmacies").child(mAuth.getCurrentUser().getUid()).child("favs");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Clear previous favoritePharmacies
+                favoritePharmacies.clear();
+
+                // Iterate through the favorite pharmacies and add markers
+                for (DataSnapshot favSnapshot : dataSnapshot.getChildren()) {
+                    String favPharmacy = favSnapshot.getValue(String.class);
+                    if (favPharmacy != null) {
+                        favoritePharmacies.add(favPharmacy);
+                    }
+                }
+                loadPharmaciesFromDatabase();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Failed to retrieve favorite pharmacies: " + databaseError.getMessage());
+            }
+        });
+
+    }
+
+    public void loadPharmaciesFromDatabase() {
+        // Retrieve pharmacy data from Firebase Realtime Database
+        Query queryPharmacies = mDatabase.child("Pharmacy");
+        queryPharmacies.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot pharmacySnapshot : dataSnapshot.getChildren()) {
+                    Pharmacy pharmacy = pharmacySnapshot.getValue(Pharmacy.class);
+                    if (pharmacy != null) {
+                        String address = pharmacy.getAddress();
+                        String name = pharmacy.getName();
+                        LatLng latLng = geocodeAddress(address);
+
+                        // Check if the pharmacy name is in the favorite pharmacies set
+                        MarkerOptions markerOptions;
+                        if (favoritePharmacies.contains(name)) {
+                            // set marker color to golden
+                            markerOptions = new MarkerOptions().position(latLng).title(name).icon(getMarkerIcon("#FFD700"));
+                        } else {
+                            // Otherwise, use default marker color
+                            markerOptions = new MarkerOptions().position(latLng).title(name);
+                        }
+                        markers.add(markerOptions);
+                        map.addMarker(markerOptions);
+                        Log.d(TAG, "Pharmacy: " + name + ", Address: " + address);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Failed to retrieve pharmacy data: " + databaseError.getMessage());
             }
         });
     }
@@ -325,26 +354,37 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void onLocationPermissionGranted() {
+        // If permission was not granted, place a default position on map
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            String tagusLocation = "Instituto Superior Técnico - Taguspark";
+            List<Address> addresses = new ArrayList<>();
+
+            Geocoder geocoder = new Geocoder(getActivity());
+            try {
+                addresses = geocoder.getFromLocationName(tagusLocation, 1);
+            } catch (IOException err) {
+                err.printStackTrace();
+            }
+
+            tagusAddress = addresses.get(0);
+
+            LatLng tagus = new LatLng(tagusAddress.getLatitude(), tagusAddress.getLongitude());
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(tagus, 17));
             return;
         }
 
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(true);
 
-        // Customize position of current location button
-        View locationButton = ((View) view.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
-        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
-        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
-        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-        rlp.setMargins(0, 0, 0, 300);
+        customizeLocationButton();
 
         Task<Location> task = client.getLastLocation();
         task.addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                if (location != null) {
+                if (location != null && !isCameraPositionSaved) {
                     currentLocation = location;
 
                     // Move map-related operations here
@@ -355,6 +395,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         });
+    }
+
+    private void customizeLocationButton() {
+        // Customize position of current location button
+        View locationButton = ((View) view.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        rlp.setMargins(0, 0, 0, 300);
     }
 
     private BitmapDescriptor getMarkerIcon(String color) {
