@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/map_frame_layout"
             android:background="@color/baby_blue"
-            android:drawableStart="@drawable/rounded_medication_24"
+            android:drawableStart="@drawable/baseline_medication_24"
             android:drawablePadding="8dp"
             android:hint="Add Pharmacy"
             android:paddingHorizontal="20dp"

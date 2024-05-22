@@ -62,7 +62,7 @@
             android:background="@drawable/edit_text_bkg"
             android:drawableStart="@drawable/baseline_alternate_email_24"
             android:drawablePadding="10dp"
-            android:hint="@string/username"
+            android:hint="E-mail"
             android:inputType="text"
             android:paddingStart="20dp"
             app:layout_constraintBottom_toTopOf="@+id/signup_password"

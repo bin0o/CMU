@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.pharmacist.fragments;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -50,6 +52,7 @@ import java.util.HashSet;
 
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Medicine;
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Pharmacy;
+import pt.ulisboa.tecnico.cmov.pharmacist.PharmacyInformationPanelActivity;
 import pt.ulisboa.tecnico.cmov.pharmacist.R;
 import pt.ulisboa.tecnico.cmov.pharmacist.WelcomeActivity;
 
@@ -193,6 +196,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             LatLng tagus = new LatLng(tagusAddress.getLatitude(), tagusAddress.getLongitude());
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(tagus, 17));
         }
+
+        // Set up clicking on markers
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                Intent intent = new Intent(getActivity(), PharmacyInformationPanelActivity.class);
+                intent.putExtra("PharmacyName", marker.getTitle());
+                startActivity(intent);
+                return false;
+            }
+        });
 
         // Set up search query listener
         SearchView mapSearch = view.findViewById(R.id.mapSearch);

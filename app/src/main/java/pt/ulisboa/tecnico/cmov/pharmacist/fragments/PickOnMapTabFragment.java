@@ -67,7 +67,7 @@ public class PickOnMapTabFragment extends Fragment {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 map = googleMap;
-                map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 map.getUiSettings().setZoomControlsEnabled(true);
 
                 // If permission was granted, got to current location
