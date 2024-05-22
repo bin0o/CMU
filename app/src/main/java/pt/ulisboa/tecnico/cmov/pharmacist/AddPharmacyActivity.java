@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -62,6 +63,7 @@ public class AddPharmacyActivity extends AppCompatActivity {
         // Sets the customized toolbar in the view
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Sets the tabs for the different options to add an address
         addressTabLayout = findViewById(R.id.address_options_tab);
@@ -95,17 +97,6 @@ public class AddPharmacyActivity extends AppCompatActivity {
 
         // Gets the database
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        // Go back to Home page
-        Button back = findViewById(R.id.back_button);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG, "Going back to Home Page");
-                Intent intent = new Intent(AddPharmacyActivity.this, HomePageActivity.class);
-                startActivity(intent);
-            }
-        });
 
         // Add a photo
         Button photoButton = findViewById(R.id.take_photo_button);
@@ -194,12 +185,6 @@ public class AddPharmacyActivity extends AppCompatActivity {
          });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
-    }
-
     private void askCameraPermissions() {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA},  CAMERA_PERMISSION_CODE);
@@ -236,4 +221,10 @@ public class AddPharmacyActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home)
+            finish();
+        return super.onOptionsItemSelected(item);
+    }
 }

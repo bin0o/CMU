@@ -8,16 +8,4 @@
         android:icon="@drawable/baseline_notifications_24"
         app:showAsAction="always" />
 
-    <item
-        android:title="@string/shopping_cart"
-        android:id="@+id/shopping_cart"
-        android:icon="@drawable/baseline_add_shopping_cart_24"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:title="@string/menu"
-        android:id="@+id/dropdown_menu"
-        android:icon="@drawable/baseline_menu_24"
-        app:showAsAction="always" />
-
 </menu>

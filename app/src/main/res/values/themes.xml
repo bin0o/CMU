@@ -14,7 +14,13 @@
         <!-- Status bar color -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>
-    
+
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title" >
+        <item name="android:textSize">18sp</item>
+        <item name="titleTextColor">@color/dark_gray</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="Theme.PharmacIST.AddMedicinePopUp" >
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowCloseOnTouchOutside">true</item>

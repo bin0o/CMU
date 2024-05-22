@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view" >
+
+    <group
+        android:checkableBehavior="single" >
+
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/baseline_home_filled_24"
+            android:title="@string/home" />
+
+        <item
+            android:id="@+id/nav_lookup_med"
+            android:icon="@drawable/baseline_medication_24"
+            android:title="@string/lookup_medicines" />
+
+    </group>
+
+    <item
+        android:title="" >
+
+        <menu>
+
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/baseline_logout_24"
+                android:title="@string/logout" />
+
+        </menu>
+
+    </item>
+
+
+</menu>

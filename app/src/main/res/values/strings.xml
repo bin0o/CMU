@@ -1,6 +1,7 @@
 <resources>
-    <!-- App name -->
+    <!-- App -->
     <string name="app_name">PharmacIST</string>
+    <string name="app_logo">App Logo</string>
 
     <!-- API Key for Google Maps -->
     <string name="api_key">AIzaSyDILjA5gjrqrskJP_GcOnpsn7FSA8tYkxg</string>
@@ -9,6 +10,10 @@
     <string name="menu">Menu</string>
     <string name="shopping_cart">Shopping Cart</string>
     <string name="notifications">Notifications</string>
+
+    <!-- Navigation Drawer -->
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
 
     <!-- Welcome page -->
     <string name="welcome_to">Welcome</string>
@@ -24,7 +29,27 @@
     <string name="login">Login</string>
     <string name="create_a_new_account">Create your account</string>
     <string name="confirm_password">Confirm Password</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="e_mail">E-mail</string>
+
+    <!-- Homepage -->
+    <string name="add_pharmacy">Add Pharmacy</string>
+
+    <!-- Add Pharmacy page -->
+    <string name="pharmacy_details">Pharmacy Details</string>
+    <string name="name">Name</string>
+    <string name="farmacia_progresso_taguspark">Farmácia Progresso Taguspark</string>
+    <string name="address">Address</string>
+    <string name="pick_on_map">Pick on map</string>
+    <string name="current_location">Current location</string>
+    <string name="manual_address">Manual address</string>
+    <string name="photo">Photo</string>
+    <string name="pharmacy_image">Pharmacy Image</string>
+    <string name="av_prof_anibal_cavaco_silva">Av. Prof. Aníbal Cavaco Silva Edf Qualidade A2</string>
+
+    <!-- Pharmacy Information Panel page -->
+    <string name="available_medicines">Available Medicines</string>
+    <string name="home">Home</string>
+    <string name="logout">Logout</string>
+    <string name="lookup_medicines">Lookup Medicines</string>
 
 </resources>

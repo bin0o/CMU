@@ -11,9 +11,9 @@
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/edit_text_bkg"
-        android:hint="Av. Prof. Aníbal Cavaco Silva Edf Qualidade A2"
+        android:hint="@string/av_prof_anibal_cavaco_silva"
         android:inputType="text"
-        android:paddingStart="20dp"
+        android:paddingHorizontal="20dp"
         android:textSize="15sp" />
 
 </FrameLayout>

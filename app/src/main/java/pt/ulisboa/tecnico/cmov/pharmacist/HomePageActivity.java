@@ -5,19 +5,27 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 
 import pt.ulisboa.tecnico.cmov.pharmacist.fragments.MapFragment;
 
-public class HomePageActivity extends AppCompatActivity {
+public class HomePageActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final String TAG = "MainActivity";
+
+    private DrawerLayout drawerLayout;
 
     private final int FINE_PERMISSION_CODE = 1;
 
@@ -36,6 +44,21 @@ public class HomePageActivity extends AppCompatActivity {
         // Sets the customized toolbar in the view
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationIcon(R.drawable.baseline_menu_24);
+
+        // Set Navigation Drawer
+        drawerLayout = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav,
+                R.string.close_nav);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.map_frame_layout, new MapFragment()).commit();
+            navigationView.setCheckedItem(R.id.nav_home);
+        }
 
         // Call map even before permissions (app must work regardless of current location)
         getSupportFragmentManager()
@@ -87,4 +110,30 @@ public class HomePageActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+
+            // Do whatever you want
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+       if (menuItem.getItemId() == R.id.nav_home)
+           getSupportFragmentManager().beginTransaction().replace(R.id.map_frame_layout, new MapFragment()).commit();
+       else if (menuItem.getItemId() == R.id.nav_lookup_med)
+           Toast.makeText(this, "Lookup Medicines!", Toast.LENGTH_SHORT).show();
+       else if (menuItem.getItemId() ==  R.id.nav_logout)
+           Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show();
+       finish();
+
+       drawerLayout.closeDrawer(GravityCompat.START);
+       return true;
+    }
+
 }

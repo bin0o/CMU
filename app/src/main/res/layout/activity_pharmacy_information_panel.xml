@@ -7,51 +7,13 @@
     android:background="@color/white"
     tools:context=".PharmacyInformationPanelActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/ist_blue"
-        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:title="@string/app_name"
-        android:titleMarginStart="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:titleTextColor="@color/white" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/back_button"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:background="@drawable/baseline_arrow_back_black_24"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/scroll_pharmacy_details"/>
-
-    <TextView
-        android:id="@+id/activity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Pharmacy Information Panel"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/scroll_pharmacy_details"/>
-
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_pharmacy_details"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
         android:scrollbars="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/activity"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" >
@@ -63,26 +25,30 @@
             <ImageView
                 android:id="@+id/pharmacy_image"
                 android:layout_width="0dp"
-                android:layout_height="200dp"
-                android:layout_marginVertical="20dp"
-                android:scaleType="fitXY"
+                android:layout_height="225dp"
+                android:layout_marginBottom="20dp"
                 android:adjustViewBounds="true"
                 android:alpha="0.4"
-                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/pharmacy_image"
+                android:scaleType="fitXY"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/pharmacy_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:text="Name"
+                android:text="@string/name"
                 android:textSize="25sp"
                 android:textStyle="bold"
                 android:textColor="@color/dark_blue"
                 app:layout_constraintBottom_toTopOf="@id/pharmacy_address"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constrainedWidth="true" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/open_map_button"
@@ -95,16 +61,18 @@
 
             <TextView
                 android:id="@+id/pharmacy_address"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="10dp"
-                android:text="Address"
+                android:text="@string/address"
                 android:textSize="16sp"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="@id/pharmacy_image"
-                app:layout_constraintStart_toEndOf="@+id/open_map_button" />
+                app:layout_constraintStart_toEndOf="@+id/open_map_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constrainedWidth="true" />
 
             <ToggleButton
                 android:id="@+id/favorite"
@@ -122,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginStart="20dp"
-                android:text="Available Medicines"
+                android:text="@string/available_medicines"
                 android:textSize="20sp"
                 android:textColor="@color/strong_blue"
                 android:textStyle="bold"
@@ -148,8 +116,15 @@
 
     </androidx.core.widget.NestedScrollView>
 
-
-
-
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Pharmacy Information Panel"
+        app:titleCentered="true"
+        app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
