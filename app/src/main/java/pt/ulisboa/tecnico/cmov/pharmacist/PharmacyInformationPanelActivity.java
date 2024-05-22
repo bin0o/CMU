@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +33,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +42,21 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
 
     private final String TAG ="PharmacyInformationPanelActivity";
 
-    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
+
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pharmacy_information_panel);
+
+        // Initialize FirebaseAuth instance
+        mAuth = FirebaseAuth.getInstance();
+
+        String userId = mAuth.getCurrentUser().getUid();
+
+        DatabaseReference favsRef = mDatabase.child("UsersFavoritePharmacies").child(userId).child("favs");
 
         Bundle extras = getIntent().getExtras();
         String pharmacyName = extras.getString("PharmacyName");
@@ -52,6 +64,65 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
         // Sets the customized toolbar in the view
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        ToggleButton favorite = findViewById(R.id.favorite);
+
+        // Initialize the ToggleButton state based on the database
+        favsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<String> favs = new ArrayList<>();
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        favs.add(snapshot.getValue(String.class));
+                    }
+                }
+
+                // Set the initial state of the ToggleButton
+                favorite.setChecked(favs.contains(pharmacyName));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("Firebase", "Error reading favorites", databaseError.toException());
+            }
+        });
+
+        favorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                favsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        List<String> favs = new ArrayList<>();
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                favs.add(snapshot.getValue(String.class));
+                            }
+                        }
+
+                        if (favorite.isChecked()) {
+                            if (!favs.contains(pharmacyName)) {
+                                favs.add(pharmacyName);
+                                favsRef.setValue(favs);
+                                Toast.makeText(PharmacyInformationPanelActivity.this, "Added to favorites", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            if (favs.contains(pharmacyName)) {
+                                favs.remove(pharmacyName);
+                                favsRef.setValue(favs);
+                                Toast.makeText(PharmacyInformationPanelActivity.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("Firebase", "Error reading favorites", databaseError.toException());
+                    }
+                });
+            }
+        });
 
         // Go back to Home page
         Button back = findViewById(R.id.back_button);

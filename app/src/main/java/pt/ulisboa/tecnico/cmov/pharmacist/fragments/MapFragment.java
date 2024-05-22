@@ -54,7 +54,6 @@ import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Medicine;
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Pharmacy;
 import pt.ulisboa.tecnico.cmov.pharmacist.PharmacyInformationPanelActivity;
 import pt.ulisboa.tecnico.cmov.pharmacist.R;
-import pt.ulisboa.tecnico.cmov.pharmacist.WelcomeActivity;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
