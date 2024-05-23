@@ -11,8 +11,6 @@
         <item name="colorSecondaryVariant">@color/baby_blue</item>
         <item name="colorOnSecondary">@color/black</item>
 
-        <!-- Status bar color -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>
 
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title" >

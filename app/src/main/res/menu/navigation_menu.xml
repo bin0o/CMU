@@ -12,8 +12,15 @@
             android:title="@string/home" />
 
         <item
+            android:id="@+id/nav_add_pharmacy"
+            android:icon="@drawable/pharmacy_logo"
+            android:title="@string/add_pharmacy"
+            android:iconTint="@drawable/pharmacy_logo"
+            />
+
+        <item
             android:id="@+id/nav_lookup_med"
-            android:icon="@drawable/baseline_medication_24"
+            android:icon="@drawable/lookup_medicine"
             android:title="@string/lookup_medicines" />
 
     </group>

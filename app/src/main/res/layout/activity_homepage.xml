@@ -36,32 +36,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/materialCardView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="30dp"
-            android:background="@color/pastel_blue"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="50dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:strokeColor="@color/pastel_blue" >
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/add_pharmacy_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/map_frame_layout"
-                android:background="@color/baby_blue"
-                android:drawableStart="@drawable/baseline_medication_24"
-                android:drawablePadding="8dp"
-                android:hint="@string/add_pharmacy"
-                android:paddingHorizontal="20dp"
-                android:textColorHint="@color/black" />
-
-        </com.google.android.material.card.MaterialCardView>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView
@@ -70,6 +44,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/white"
+        android:visibility="gone"
         app:headerLayout="@layout/navigation_header"
         app:itemIconTint="@color/ist_blue"
         app:itemTextColor="@color/black"

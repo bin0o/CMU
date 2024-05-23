@@ -51,5 +51,7 @@
     <string name="home">Home</string>
     <string name="logout">Logout</string>
     <string name="lookup_medicines">Lookup Medicines</string>
+    <string name="medicine_name">Medicine Name</string>
+    <string name="add_medicine">Add Medicine</string>
 
 </resources>
