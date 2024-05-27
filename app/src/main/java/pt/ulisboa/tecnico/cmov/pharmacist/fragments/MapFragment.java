@@ -72,7 +72,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     public static Address tagusAddress;
 
-    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     private List<MarkerOptions> markers = new ArrayList<>();
 
@@ -154,6 +154,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
+        loadFavoritePharmacies();
         if (map != null && mCameraPosition != null) {
             map.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
             isCameraPositionSaved = true;

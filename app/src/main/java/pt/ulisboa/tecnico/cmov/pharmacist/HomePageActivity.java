@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +23,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import pt.ulisboa.tecnico.cmov.pharmacist.fragments.MapFragment;
 
@@ -33,6 +35,8 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
     private ActionBarDrawerToggle toggle;
 
     private final int FINE_PERMISSION_CODE = 1;
+
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +146,9 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
        }
        else if (menuItem.getItemId() ==  R.id.nav_logout) {
            Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show();
-           finish();
+           mAuth.signOut();
+           Intent intent = new Intent(HomePageActivity.this, WelcomeActivity.class);
+           startActivity(intent);
        }
 
        drawerLayout.close();
