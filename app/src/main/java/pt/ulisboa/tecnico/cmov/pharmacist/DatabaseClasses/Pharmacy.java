@@ -4,7 +4,7 @@ public class Pharmacy {
     private String name;
     private String address;
 
-    private String imageBase64;
+    private String imageUrl;
 
     // Required empty constructor for Firebase
     public Pharmacy() {}
@@ -12,7 +12,7 @@ public class Pharmacy {
     public Pharmacy(String name, String address, String imageBase64) {
         this.name = name;
         this.address = address;
-        this.imageBase64 = imageBase64;
+        this.imageUrl = imageUrl;
     }
 
     // Getter and setter methods
@@ -32,9 +32,9 @@ public class Pharmacy {
         this.address = address;
     }
 
-    public String getImageBase64() {return imageBase64; }
+    public String getImageUrl() {return imageUrl; }
 
-    public void setImageBase64(String imageBase64)  {this.imageBase64 = imageBase64; }
+    public void setImageUrl(String imageUrl)  {this.imageUrl = imageUrl; }
 }
 
 

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -31,10 +32,15 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Pharmacy;
 import pt.ulisboa.tecnico.cmov.pharmacist.adapter.ViewPagerAdpater;
@@ -46,6 +52,7 @@ public class AddPharmacyActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE_CODE = 102;
     private DatabaseReference mDatabase;
 
+    private StorageReference mStorageRef;
     private TabLayout addressTabLayout;
 
     private ViewPager2 viewPager2;
@@ -97,6 +104,9 @@ public class AddPharmacyActivity extends AppCompatActivity {
 
         // Gets the database
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        // Gets the storage
+        mStorageRef = FirebaseStorage.getInstance().getReference();
 
         // Add a photo
         Button photoButton = findViewById(R.id.take_photo_button);
@@ -154,35 +164,67 @@ public class AddPharmacyActivity extends AppCompatActivity {
                  BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
                  Bitmap bitmap = bitmapDrawable.getBitmap();
 
-                // Convert the bitmap to a byte array
+                 // Convert the bitmap to a byte array
                  ByteArrayOutputStream baos = new ByteArrayOutputStream();
                  bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                  byte[] imageData = baos.toByteArray();
-                 String imageBase64 = Base64.encodeToString(imageData, Base64.DEFAULT);
 
-                 // Create a new Pharmacy object
-                 Pharmacy pharmacy = new Pharmacy(pharmacyName, address, imageBase64);
-
-                // Push the Pharmacy object to the "Pharmacy" node
-                 mDatabase.child("Pharmacy").push().setValue(pharmacy)
-                         .addOnCompleteListener(new OnCompleteListener<Void>() {
-                             @Override
-                             public void onComplete(@NonNull Task<Void> task) {
-                                 if (task.isSuccessful()) {
-                                     Log.d(TAG, "addPharmacy: Pharmacy added successfully");
-                                 } else {
-                                     Log.e(TAG, "addPharmacy: Failed to add pharmacy", task.getException());
-                                 }
-                             }
-                         });
-
-                 Toast.makeText(AddPharmacyActivity.this, "Pharmacy added successfully", Toast.LENGTH_SHORT).show();
-
-                 Log.i(TAG, "Going back to Home Page");
-                 Intent intent = new Intent(AddPharmacyActivity.this, HomePageActivity.class);
-                 startActivity(intent);
+                 // Upload image to Firebase Storage
+                 // it also saves the pharmacy to database
+                 uploadImageToStorage(pharmacyName, address, imageData);
              }
          });
+    }
+
+    private void uploadImageToStorage(String pharmacyName, String address, byte[] imageData) {
+        final StorageReference imageRef = mStorageRef.child("pharmacy_images/" + pharmacyName + ".jpg");
+        UploadTask uploadTask = imageRef.putBytes(imageData);
+
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                imageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+                            savePharmacyToDatabase(pharmacyName, address, downloadUri.toString());
+                        } else {
+                            Log.e(TAG, "Failed to get download URL", task.getException());
+                            Toast.makeText(AddPharmacyActivity.this, "Failed to add pharmacy", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Failed to upload image", e);
+                Toast.makeText(AddPharmacyActivity.this, "Failed to add pharmacy", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void savePharmacyToDatabase(String pharmacyName, String address, String imageUrl) {
+        // Create a new Pharmacy object
+        Pharmacy pharmacy = new Pharmacy(pharmacyName, address, imageUrl);
+
+        // Push the Pharmacy object to the "Pharmacy" node
+        mDatabase.child("Pharmacy").push().setValue(pharmacy)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "addPharmacy: Pharmacy added successfully");
+                            Toast.makeText(AddPharmacyActivity.this, "Pharmacy added successfully", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(AddPharmacyActivity.this, HomePageActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Log.e(TAG, "addPharmacy: Failed to add pharmacy", task.getException());
+                            Toast.makeText(AddPharmacyActivity.this, "Failed to add pharmacy", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     private void askCameraPermissions() {

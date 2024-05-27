@@ -149,7 +149,7 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                 address.setText(pharmacy.getAddress());
 
                 ImageView photo = findViewById(R.id.pharmacy_image);
-                byte [] encodeByte = Base64.decode(pharmacy.getImageBase64(), Base64.DEFAULT);
+                byte [] encodeByte = Base64.decode(pharmacy.getImageUrl(), Base64.DEFAULT);
                 Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
                 photo.setImageBitmap(bitmap);
 
