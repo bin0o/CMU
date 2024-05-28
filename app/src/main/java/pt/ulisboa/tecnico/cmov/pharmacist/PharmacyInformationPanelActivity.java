@@ -163,25 +163,28 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                 TextView address = findViewById(R.id.pharmacy_address);
                 address.setText(pharmacy.getAddress());
 
-                ImageView photo = findViewById(R.id.pharmacy_image);
+                ImageView photoView = findViewById(R.id.pharmacy_image);
 
                 StorageReference photoRef = mStorageRef.getReferenceFromUrl(pharmacy.getImageUrl());
 
-                try {
-                    File localFile = File.createTempFile("images","jpg");
-
-                    // Download the image
-                    photoRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
-                        // Successfully downloaded the file
-                        Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                        photo.setImageBitmap(bitmap);
-                    }).addOnFailureListener(exception -> {
+                // Set the maximum size to download in bytes (e.g., 1024 * 1024 for 1MB)
+                long ONE_MEGABYTE = 1024 * 1024;
+                photoRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Convert the byte array to a Bitmap
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        // Set the Bitmap to the ImageView
+                        photoView.setImageBitmap(bitmap);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
                         // Handle any errors
                         exception.printStackTrace();
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                        Toast.makeText(PharmacyInformationPanelActivity.this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
                 // Call map
                 Button openMapButton = findViewById(R.id.open_map_button);
