@@ -191,7 +191,6 @@ public class AddPharmacyActivity extends AppCompatActivity {
                             savePharmacyToDatabase(pharmacyName, address, downloadUri.toString());
                         } else {
                             Log.e(TAG, "Failed to get download URL", task.getException());
-                            Toast.makeText(AddPharmacyActivity.this, "Failed to add pharmacy", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -200,7 +199,6 @@ public class AddPharmacyActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.e(TAG, "Failed to upload image", e);
-                Toast.makeText(AddPharmacyActivity.this, "Failed to add pharmacy", Toast.LENGTH_SHORT).show();
             }
         });
     }
