@@ -9,7 +9,7 @@ public class Pharmacy {
     // Required empty constructor for Firebase
     public Pharmacy() {}
 
-    public Pharmacy(String name, String address, String imageBase64) {
+    public Pharmacy(String name, String address, String imageUrl) {
         this.name = name;
         this.address = address;
         this.imageUrl = imageUrl;

@@ -6,9 +6,8 @@ import pt.ulisboa.tecnico.cmov.pharmacist.fragments.PharmacyInformationPanelMapF
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import android.nfc.Tag;
+
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +26,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.compose.runtime.snapshots.Snapshot;
 
+import com.google.android.gms.auth.api.signin.internal.Storage;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,15 +38,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PharmacyInformationPanelActivity extends AppCompatActivity {
 
-    private final String TAG ="PharmacyInformationPanelActivity";
+    private final String TAG = "PharmacyInformationPanelActivity";
 
     private FirebaseAuth mAuth;
+
+    private FirebaseStorage mStorageRef;
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -53,6 +64,9 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
 
         // Initialize FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
+
+        // Gets the storage
+        mStorageRef = FirebaseStorage.getInstance();
 
         String userId = mAuth.getCurrentUser().getUid();
 
@@ -150,9 +164,24 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                 address.setText(pharmacy.getAddress());
 
                 ImageView photo = findViewById(R.id.pharmacy_image);
-                byte [] encodeByte = Base64.decode(pharmacy.getImageUrl(), Base64.DEFAULT);
-                Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-                photo.setImageBitmap(bitmap);
+
+                StorageReference photoRef = mStorageRef.getReferenceFromUrl(pharmacy.getImageUrl());
+
+                try {
+                    File localFile = File.createTempFile("images","jpg");
+
+                    // Download the image
+                    photoRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+                        // Successfully downloaded the file
+                        Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                        photo.setImageBitmap(bitmap);
+                    }).addOnFailureListener(exception -> {
+                        // Handle any errors
+                        exception.printStackTrace();
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 // Call map
                 Button openMapButton = findViewById(R.id.open_map_button);
