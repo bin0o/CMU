@@ -4,11 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".PharmacyInformationPanelActivity">
+    android:background="@color/white">
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/scroll_pharmacy_details"
+        android:id="@+id/scroll_medicine_details"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
@@ -23,13 +22,13 @@
             android:layout_height="wrap_content" >
 
             <ImageView
-                android:id="@+id/pharmacy_image"
+                android:id="@+id/medicine_image"
                 android:layout_width="0dp"
                 android:layout_height="225dp"
                 android:layout_marginBottom="20dp"
                 android:adjustViewBounds="true"
                 android:alpha="0.4"
-                android:contentDescription="@string/pharmacy_image"
+                android:contentDescription="Medicine Image"
                 android:scaleType="fitXY"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -37,7 +36,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/pharmacy_name"
+                android:id="@+id/medicine_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
@@ -46,97 +45,66 @@
                 android:textSize="25sp"
                 android:textStyle="bold"
                 android:textColor="@color/dark_blue"
-                app:layout_constraintBottom_toTopOf="@id/pharmacy_address"
+                app:layout_constraintBottom_toTopOf="@id/medicine_address"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constrainedWidth="true" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/open_map_button"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:background="@drawable/baseline_location_on_24"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="10dp"
-                app:layout_constraintBottom_toBottomOf="@id/pharmacy_image"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/directions_button"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/baseline_directions_24"
-                app:layout_constraintBottom_toBottomOf="@id/pharmacy_image"
-                app:layout_constraintStart_toEndOf="@+id/open_map_button"
-                app:layout_constraintEnd_toStartOf="@id/pharmacy_address"/>
-
             <TextView
-                android:id="@+id/pharmacy_address"
+                android:id="@+id/medicine_address"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginHorizontal="20dp"
                 android:layout_marginBottom="10dp"
                 android:text="@string/address"
                 android:textSize="18sp"
                 android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="@id/pharmacy_image"
-                app:layout_constraintStart_toEndOf="@+id/directions_button"
+                app:layout_constraintBottom_toBottomOf="@id/medicine_image"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constrainedWidth="true" />
 
             <ToggleButton
-                android:id="@+id/favorite"
+                android:id="@+id/notifications"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginHorizontal="20dp"
                 android:textOn=""
                 android:textOff=""
-                android:background="@drawable/favorite_pharmacy_selector"
-                app:layout_constraintTop_toTopOf="@id/pharmacy_name"
+                android:background="@drawable/medicine_notifications_selector"
+                app:layout_constraintTop_toTopOf="@id/medicine_name"
                 app:layout_constraintEnd_toEndOf="parent" />
 
+
             <TextView
-                android:id="@+id/medicines_text"
+                android:id="@+id/pharmacies_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:layout_marginStart="20dp"
-                android:text="@string/available_medicines"
+                android:text="Availability in Pharmacies"
                 android:textSize="20sp"
                 android:textColor="@color/strong_blue"
                 android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/pharmacy_image"
+                app:layout_constraintTop_toBottomOf="@id/medicine_image"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/medicine_search" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="10dp"
-                android:text="@string/add_medicine"
-                android:textAllCaps="false"
-                app:layout_constraintTop_toTopOf="@id/medicines_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/medicine_search"/>
+                app:layout_constraintBottom_toTopOf="@id/pharmacy_search" />
 
             <SearchView
-                android:id="@+id/medicine_search"
+                android:id="@+id/pharmacy_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:layout_marginVertical="20dp"
                 android:iconifiedByDefault="false"
                 android:queryHint="Search for medicines here"
-                app:layout_constraintTop_toBottomOf="@id/medicines_text"
-                app:layout_constraintBottom_toTopOf="@id/medicines_list"
+                app:layout_constraintTop_toBottomOf="@id/pharmacies_text"
+                app:layout_constraintBottom_toTopOf="@id/pharmacies_list"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <ListView
-                android:id="@+id/medicines_list"
+                android:id="@+id/pharmacies_list"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginHorizontal="20dp"
@@ -145,8 +113,8 @@
                 android:divider="@color/light_gray"
                 android:dividerHeight="6sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/medicine_search"
-                tools:listitem="@layout/medicines_list_item" />
+                app:layout_constraintTop_toBottomOf="@id/pharmacy_search"
+                tools:listitem="@layout/pharmacy_list_item" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -159,7 +127,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Pharmacy Information Panel"
+        app:title="Medicine Information Panel"
         app:titleCentered="true"
         app:titleTextAppearance="@style/Toolbar.TitleText"/>
 

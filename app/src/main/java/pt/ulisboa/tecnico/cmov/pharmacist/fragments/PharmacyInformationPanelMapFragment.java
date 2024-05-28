@@ -45,8 +45,9 @@ public class PharmacyInformationPanelMapFragment extends DialogFragment {
         // Required empty public constructor
     }
 
-    public static PharmacyInformationPanelMapFragment newInstance() { return new PharmacyInformationPanelMapFragment(); }
-
+    public static PharmacyInformationPanelMapFragment newInstance() {
+        return new PharmacyInformationPanelMapFragment();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

@@ -16,6 +16,7 @@ playServicesMaps = "18.2.0"
 googleGmsGoogleServices = "4.4.1"
 firebaseDatabase = "21.0.0"
 appcompat = "1.6.1"
+zxingAndroidEmbedded = "4.3.0"
 firebaseStorage = "21.0.0"
 
 [libraries]
@@ -43,6 +44,7 @@ play-services-maps = { group = "com.google.android.gms", name = "play-services-m
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
+zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

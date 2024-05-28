@@ -12,6 +12,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -191,6 +192,14 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
 
+                    }
+                });
+
+                medicinesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        // String medicineName = medicinesList.getItemAtPosition(position).toString();
+                        Toast.makeText(PharmacyInformationPanelActivity.this, String.valueOf(position), Toast.LENGTH_LONG).show();
                     }
                 });
 
