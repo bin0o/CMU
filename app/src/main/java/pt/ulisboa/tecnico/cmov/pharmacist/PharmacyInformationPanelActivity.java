@@ -161,8 +161,9 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                 TextView name = findViewById(R.id.pharmacy_name);
                 name.setText(pharmacy.getName());
 
-                TextView address = findViewById(R.id.pharmacy_address);
-                address.setText(pharmacy.getAddress());
+                TextView addressView = findViewById(R.id.pharmacy_address);
+                String pharmacyAddress = pharmacy.getAddress();
+                addressView.setText(pharmacyAddress);
 
                 ImageView photoView = findViewById(R.id.pharmacy_image);
 
@@ -193,10 +194,21 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Bundle bundle = new Bundle();
-                        bundle.putString("PharmacyAddress", address.getText().toString());
+                        bundle.putString("PharmacyAddress", pharmacyAddress);
                         PharmacyInformationPanelMapFragment fragment = PharmacyInformationPanelMapFragment.newInstance();
                         fragment.setArguments(bundle);
                         fragment.show(getSupportFragmentManager(), "InfoPanelMapFragment");
+                    }
+                });
+
+                Button directionsButton = findViewById(R.id.directions_button);
+
+                directionsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(PharmacyInformationPanelActivity.this, HomePageActivity.class);
+                        intent.putExtra("pharmacy_address", pharmacyAddress);
+                        startActivity(intent);
                     }
                 });
 
