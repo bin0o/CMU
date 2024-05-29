@@ -31,6 +31,7 @@
     <androidx.appcompat.widget.AppCompatButton
         android:layout_width="25dp"
         android:layout_height="25dp"
+        android:focusable="false"
         android:layout_marginHorizontal="30dp"
         android:background="@drawable/baseline_add_circle_outline_24"
         app:layout_constraintTop_toTopOf="parent"

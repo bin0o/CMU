@@ -112,6 +112,7 @@
                 app:layout_constraintBottom_toTopOf="@id/medicine_search" />
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/add_medicine_button"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_marginEnd="20dp"

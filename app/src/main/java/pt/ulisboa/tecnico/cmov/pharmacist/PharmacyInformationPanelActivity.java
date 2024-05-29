@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.pharmacist;
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.*;
 import pt.ulisboa.tecnico.cmov.pharmacist.fragments.PharmacyInformationPanelMapFragment;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -16,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -24,13 +26,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.compose.runtime.snapshots.Snapshot;
 
-import com.google.android.gms.auth.api.signin.internal.Storage;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,10 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +52,8 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
+    ArrayAdapter<String> arrayAdapter = null;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +64,9 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
 
         // Gets the storage
         mStorageRef = FirebaseStorage.getInstance();
+
+        // Display available medicines
+        ListView medicinesList = findViewById(R.id.medicines_list);
 
         String userId = mAuth.getCurrentUser().getUid();
 
@@ -199,8 +199,6 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                     }
                 });
 
-                // Display available medicines
-                ListView medicinesList = findViewById(R.id.medicines_list);
 
                 Query queryMedicines = mDatabase.child("PharmacyMedicines").child(pharmacyName);
                 queryMedicines.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -213,7 +211,7 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                             Log.d(TAG, medicineSnapshot.getKey());
                         }
 
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(PharmacyInformationPanelActivity.this,
+                        arrayAdapter = new ArrayAdapter<String>(PharmacyInformationPanelActivity.this,
                                 R.layout.medicines_list_item,
                                 R.id.medicine_name,
                                 medicineNames);
@@ -227,14 +225,6 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                     }
                 });
 
-                medicinesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        // String medicineName = medicinesList.getItemAtPosition(position).toString();
-                        Toast.makeText(PharmacyInformationPanelActivity.this, String.valueOf(position), Toast.LENGTH_LONG).show();
-                    }
-                });
-
             }
 
             @Override
@@ -243,8 +233,60 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
             }
         });
 
+        medicinesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected medicine name
+                String medicineName = (String) parent.getItemAtPosition(position);
+
+                Log.d(TAG, "Selected medicine: " + medicineName);
+
+                // Create an intent to start the MedicineInformationPanelActivity
+                Intent intent = new Intent(PharmacyInformationPanelActivity.this, MedicineInformationPanelActivity.class);
+
+                // Pass the medicine name to the next activity
+                intent.putExtra("MedicineName", medicineName);
+
+                // Start the activity
+                startActivity(intent);
+            }
+        });
+
         // Adds stock to an existing medicine or adds a new medicine
-//        Button addMedicineButton = findViewById(R.id.add_medicine_button);
+        Button addMedicineButton = findViewById(R.id.add_medicine_button);
+
+        addMedicineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PharmacyInformationPanelActivity.this, AddMedicineActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Set up search query listener
+        SearchView mapSearch = findViewById(R.id.medicine_search);
+        mapSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            public boolean onQueryTextSubmit(String query) {
+                if (query.isEmpty()) {
+                    arrayAdapter.getFilter().filter("");
+                } else {
+                    arrayAdapter.getFilter().filter(query);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.isEmpty()) {
+                    arrayAdapter.getFilter().filter("");
+                } else {
+                    arrayAdapter.getFilter().filter(newText);
+                }
+                return true;
+            }
+        });
+
+
     }
 
     @Override

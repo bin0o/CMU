@@ -36,7 +36,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/medicine_name"
+                android:id="@+id/medicine_name_panel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
@@ -72,7 +72,7 @@
                 android:textOn=""
                 android:textOff=""
                 android:background="@drawable/medicine_notifications_selector"
-                app:layout_constraintTop_toTopOf="@id/medicine_name"
+                app:layout_constraintTop_toTopOf="@id/medicine_name_panel"
                 app:layout_constraintEnd_toEndOf="parent" />
 
 
