@@ -208,7 +208,7 @@ public class AddPharmacyActivity extends AppCompatActivity {
         Pharmacy pharmacy = new Pharmacy(pharmacyName, address, imageUrl);
 
         // Push the Pharmacy object to the "Pharmacy" node
-        mDatabase.child("Pharmacy").push().setValue(pharmacy)
+        mDatabase.child("Pharmacy").child(pharmacyName).setValue(pharmacy)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
