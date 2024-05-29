@@ -8,12 +8,14 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -55,6 +57,11 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_medicine_information_panel);
 
+        // Sets the customized toolbar in the view
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         client = LocationServices.getFusedLocationProviderClient(this);
 
         // Get the medicine name from the intent
@@ -65,7 +72,7 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
         // Log the medicine name to verify the intent data
         Log.d(TAG, "Received medicine name: " + medicineName);
 
-        // Display the medicine name (for demonstration purposes)
+        // Display the medicine name
         TextView medicineNameTextView = findViewById(R.id.medicine_name_panel);
         medicineNameTextView.setText(medicineName);
 
@@ -117,10 +124,32 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
             }
         });
 
+        // Set up search query listener
+        SearchView pharmacySearch = findViewById(R.id.pharmacy_search);
+        pharmacySearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            public boolean onQueryTextSubmit(String query) {
+                if (query.isEmpty()) {
+                    pharmacyAdapter.getFilter().filter("");
+                } else {
+                    pharmacyAdapter.getFilter().filter(query);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.isEmpty()) {
+                    pharmacyAdapter.getFilter().filter("");
+                } else {
+                    pharmacyAdapter.getFilter().filter(newText);
+                }
+                return true;
+            }
+        });
+
     }
 
     private void sortPharmaciesByDistance(List<PharmacyHelper> pharmacies) {
-        // Assuming you have the user's location
         Location userLocation = currentLocation;
 
         for (PharmacyHelper pharmacyHelper : pharmacies) {
@@ -160,7 +189,7 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            String tagusLocation = "Instituto Superior Técnico - Taguspark";
+            currentLocation = new Location("Instituto Superior Técnico - Taguspark");
             return;
         }
 
