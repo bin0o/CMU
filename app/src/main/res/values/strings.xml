@@ -54,4 +54,9 @@
     <string name="medicine_name">Medicine Name</string>
     <string name="add_medicine">Add Medicine</string>
 
+    <!-- Add Medicine page -->
+    <string name="brufen_purpose">Brufen is an everyday painkiller for...</string>
+    <string name="purpose_preferred_use">Purpose/ Preferred Use</string>
+    <string name="brufen">Brufen</string>
+
 </resources>

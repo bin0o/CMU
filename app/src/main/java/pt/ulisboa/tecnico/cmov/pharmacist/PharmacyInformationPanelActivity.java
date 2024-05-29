@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.pharmacist;
 
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.*;
+import pt.ulisboa.tecnico.cmov.pharmacist.fragments.AddMedicineManualFragment;
 import pt.ulisboa.tecnico.cmov.pharmacist.fragments.PharmacyInformationPanelMapFragment;
 
 import android.content.Intent;
@@ -225,6 +226,18 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                     }
                 });
 
+                // Adds stock to an existing medicine or adds a new medicine
+                Button addMedicineButton = findViewById(R.id.add_medicine_button);
+                addMedicineButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("PharmacyAddress", address.getText().toString());
+                        AddMedicineManualFragment fragment = AddMedicineManualFragment.newInstance();
+                        fragment.setArguments(bundle);
+                        fragment.show(getSupportFragmentManager(), "InfoPanelMapFragment");
+                    }
+                });
             }
 
             @Override
@@ -248,17 +261,6 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                 intent.putExtra("MedicineName", medicineName);
 
                 // Start the activity
-                startActivity(intent);
-            }
-        });
-
-        // Adds stock to an existing medicine or adds a new medicine
-        Button addMedicineButton = findViewById(R.id.add_medicine_button);
-
-        addMedicineButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(PharmacyInformationPanelActivity.this, AddMedicineActivity.class);
                 startActivity(intent);
             }
         });

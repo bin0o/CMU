@@ -36,7 +36,6 @@
         <activity android:name=".HomePageActivity" />
         <activity android:name=".AddPharmacyActivity" />
         <activity android:name=".PharmacyInformationPanelActivity" />
-        <activity android:name=".AddMedicineActivity" />
         <activity android:name=".MedicineInformationPanelActivity" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
