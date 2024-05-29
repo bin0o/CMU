@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_gravity="top"
     android:background="@color/white"
     android:paddingBottom="10dp"
-
     tools:context=".fragments.AddMedicineManualFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -160,9 +160,24 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="25dp"
         android:contentDescription="Medicine Box Photo"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/add_medicine_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraint_frame" />
+
+    <Button
+        android:id="@+id/add_medicine_button"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/login_signup_button_bkg"
+        android:text="Add"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@+id/constraint_frame"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintWidth_percent="0.8"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
