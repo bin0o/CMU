@@ -140,7 +140,8 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
            startActivity(intent);
        }
        else if (menuItem.getItemId() == R.id.nav_lookup_med) {
-           Toast.makeText(this, "Lookup Medicines!", Toast.LENGTH_SHORT).show();
+           Intent intent = new Intent(HomePageActivity.this, LookupMedicineActivity.class);
+           startActivity(intent);
        }
        else if (menuItem.getItemId() ==  R.id.nav_logout) {
            Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show();

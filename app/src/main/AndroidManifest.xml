@@ -35,6 +35,7 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".HomePageActivity" />
         <activity android:name=".AddPharmacyActivity" />
+        <activity android:name=".LookupMedicineActivity" />
         <activity android:name=".PharmacyInformationPanelActivity" />
         <activity android:name=".MedicineInformationPanelActivity" />
         <activity android:name=".ScanBarcodeActivity"

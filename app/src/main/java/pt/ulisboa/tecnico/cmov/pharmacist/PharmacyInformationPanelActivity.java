@@ -300,7 +300,6 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
         queryMedicines.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d(TAG, "entri");
                 Log.d(TAG, "Medicine query count: " + snapshot.getChildrenCount());
                 List<String> medicineNames = new ArrayList<>();
 

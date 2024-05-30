@@ -118,7 +118,6 @@ public class AddPharmacyActivity extends AppCompatActivity {
             }
         });
 
-
         // Adding a new Pharmacy
         Button addPharmacyButton = findViewById(R.id.add_pharmacy_button);
         addPharmacyButton.setOnClickListener(new View.OnClickListener() {
