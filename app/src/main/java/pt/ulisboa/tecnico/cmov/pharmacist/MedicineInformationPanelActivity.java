@@ -129,7 +129,7 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
                 });
 
                 for (DataSnapshot snapshot : dataSnapshot.child("pharmacies").getChildren()) {
-                    String pharmacyName = snapshot.getKey();
+                    String pharmacyName = snapshot.getValue(String.class);
                     Log.d(TAG, "Pharmacy name: " + pharmacyName);
                     DatabaseReference pharmacyRef = FirebaseDatabase.getInstance().getReference("Pharmacy").child(pharmacyName);
                     pharmacyRef.addListenerForSingleValueEvent(new ValueEventListener() {

@@ -366,7 +366,35 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
                                 Toast.makeText(PharmacyInformationPanelActivity.this, "Not enough stock", Toast.LENGTH_LONG).show();
                             } else {
                                 int updatedStock = currentStock - purchaseQuantity;
-                                mDatabase.child("PharmacyMedicines").child(pharmacyName).child(medicineName).setValue(updatedStock);
+
+                                if (updatedStock == 0) {
+                                    mDatabase.child("PharmacyMedicines").child(pharmacyName).child(medicineName).removeValue();
+
+                                    Query query = mDatabase.child("Medicines").child(medicineName).child("pharmacies");
+
+                                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            int position = -1;
+
+                                            for (DataSnapshot pharmacySnapshot : snapshot.getChildren()) {
+                                                if (pharmacySnapshot.getValue(String.class).equals(pharmacyName)) {
+                                                    position = Integer.parseInt(pharmacySnapshot.getKey());
+                                                }
+                                            }
+
+                                            mDatabase.child("Medicines").child(medicineName).child("pharmacies").child(String.valueOf(position)).removeValue();
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+                                else {
+                                    mDatabase.child("PharmacyMedicines").child(pharmacyName).child(medicineName).setValue(updatedStock);
+                                }
 
                                 Bundle result = new Bundle();
 
