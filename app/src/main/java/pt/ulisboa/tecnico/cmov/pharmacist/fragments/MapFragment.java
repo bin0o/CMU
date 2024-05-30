@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.EmailAuthCredential;
@@ -114,6 +115,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if (supportMapFragment != null) {
             supportMapFragment.getMapAsync(this);
         }
+
+        // Retrieve the destination address from arguments
+        if (getArguments() != null) {
+            String destinationAddress = getArguments().getString("destination_address");
+            if (destinationAddress != null) {
+                displayRoute(destinationAddress);
+            }
+        }
+
         return view;
     }
 
@@ -324,6 +334,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Log.e(TAG, "Geocoding failed: " + e.getMessage());
         }
         return null;
+    }
+
+    private void displayRoute(String destinationAddress) {
+        if (currentLocation == null) {
+            Toast.makeText(getActivity(), "Current location not available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        LatLng start = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        LatLng destination = geocodeAddress(destinationAddress);
+
+        // Add markers for the start and destination points
+        MarkerOptions startMarkerOptions = new MarkerOptions().position(start).title("Current Location");
+        MarkerOptions destinationMarkerOptions = new MarkerOptions().position(destination).title("Destination");
+
+        map.addMarker(startMarkerOptions);
+        map.addMarker(destinationMarkerOptions);
+
+        // Draw the polyline on the map
+        map.addPolyline(new PolylineOptions()
+                .add(start,destination)
+                .width(10)
+                .color(Color.BLUE)
+                .geodesic(true));
     }
 
     private String findClosestAddressToCurrentLocation(List<String> addressList) {

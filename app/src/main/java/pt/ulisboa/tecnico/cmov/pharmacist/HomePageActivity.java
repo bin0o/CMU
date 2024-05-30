@@ -50,6 +50,18 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        // Retrieve the destination address
+        // To display a route to a pharmacy
+        String destinationAddress = getIntent().getStringExtra("destination_address");
+        if (destinationAddress != null) {
+            Bundle bundle = new Bundle();
+            bundle.putString("destination_address", destinationAddress);
+            MapFragment mapFragment = new MapFragment();
+            mapFragment.setArguments(bundle);
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.map_frame_layout,  new MapFragment()).commit();
+        }
+
         // Check for location permissions
         if (checkLocationPermission()) {
             loadMapFragment();
