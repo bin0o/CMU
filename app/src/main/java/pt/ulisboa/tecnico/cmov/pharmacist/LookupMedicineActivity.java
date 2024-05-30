@@ -22,15 +22,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LookupMedicineActivity extends AppCompatActivity {
     private final String TAG = "LookupMedicineActivity";
-
-    private FirebaseAuth mAuth;
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -48,9 +45,6 @@ public class LookupMedicineActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // Initialize FirebaseAuth instance
-        mAuth = FirebaseAuth.getInstance();
 
         // Display available medicines
         medicinesList = findViewById(R.id.medicines_list);

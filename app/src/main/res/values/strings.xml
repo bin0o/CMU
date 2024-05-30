@@ -53,10 +53,35 @@
     <string name="lookup_medicines">Lookup Medicines</string>
     <string name="medicine_name">Medicine Name</string>
     <string name="add_medicine">Add Medicine</string>
+    <string name="purchase_medicine">Purchase medicine</string>
+    <string name="purchase">Purchase</string>
+
+    <!-- Medicine Information Panel page -->
+    <string name="medicine_image">Medicine Image</string>
+    <string name="availability_in_pharmacies">Availability in Pharmacies</string>
+    <string name="pharmacy_name">Pharmacy Name</string>
+    <string name="_0m">0m</string>
+    <string name="circle_background">Circle Background</string>
+    <string name="shopping_cart_icon">Shopping cart icon</string>
 
     <!-- Add Medicine page -->
-    <string name="brufen_purpose">Brufen is an everyday painkiller for...</string>
+    <string name="brufen_purpose">Brufen is an everyday painkiller for…</string>
     <string name="purpose_preferred_use">Purpose/ Preferred Use</string>
     <string name="brufen">Brufen</string>
+    <string name="tap_to_scan_medicine_barcode">Tap to scan medicine barcode</string>
+    <string name="quantity">Quantity</string>
+    <string name="_1">1</string>
+    <string name="add">Add</string>
+    <string name="box_photo">Box Photo</string>
+    <string name="medicine_box_photo">Medicine Box Photo</string>
+    <string name="success">Success</string>
+    <string name="medicine_found">Medicine found</string>
+    <string name="done">Done</string>
+    <string name="unsuccessful">Unsuccessful</string>
+    <string name="medicine_not_found">Medicine not found</string>
+    <string name="add_new_medicine">Add new medicine</string>
+
+    <!-- Lookup Medicine page -->
+    <string name="medicine_icon">Medicine Icon</string>
 
 </resources>

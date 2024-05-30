@@ -9,13 +9,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -25,8 +28,10 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -322,9 +327,75 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
 
     @Override
     public void onAddMedicineClick(String medicineName) {
-        // Handle the button click event here
-        Toast.makeText(this, "Add " + medicineName, Toast.LENGTH_SHORT).show();
         // Add your logic to handle the add medicine button click event
+        ConstraintLayout purchaseLayout = findViewById(R.id.purchase_layout);
+        View viewPurchase = LayoutInflater.from(PharmacyInformationPanelActivity.this).inflate(R.layout.purchase_medicine_dialog, purchaseLayout);
+
+        TextView purchaseMedicine = viewPurchase.findViewById(R.id.purchase_text);
+        String purchaseText = "Purchase " + medicineName;
+        purchaseMedicine.setText(purchaseText);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(PharmacyInformationPanelActivity.this);
+        builder.setView(viewPurchase);
+        final AlertDialog alertDialog = builder.create();
+
+        Button purchaseButton = viewPurchase.findViewById(R.id.purchase_button);
+        purchaseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText quantity = viewPurchase.findViewById(R.id.medicine_quantity);
+
+                if (TextUtils.isEmpty(quantity.getText().toString())) {
+                    Toast.makeText(PharmacyInformationPanelActivity.this, "Please enter the quantity to purchase!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Integer purchaseQuantity = Integer.parseInt(quantity.getText().toString());
+
+                // Check if there's enough medicine quantity
+                Query queryPharmacy = mDatabase.child("PharmacyMedicines").child(pharmacyName).child(medicineName);
+                queryPharmacy.addListenerForSingleValueEvent( new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            int currentStock = snapshot.getValue(Integer.class);
+
+                            Log.d(TAG, "Stock: " + currentStock);
+
+                            if (currentStock - purchaseQuantity < 0) {
+                                Toast.makeText(PharmacyInformationPanelActivity.this, "Not enough stock", Toast.LENGTH_LONG).show();
+                            } else {
+                                int updatedStock = currentStock - purchaseQuantity;
+                                mDatabase.child("PharmacyMedicines").child(pharmacyName).child(medicineName).setValue(updatedStock);
+
+                                Bundle result = new Bundle();
+
+                                result.putBoolean("added", true);
+
+                                getSupportFragmentManager().setFragmentResult("added",result);
+
+                                Toast.makeText(PharmacyInformationPanelActivity.this, "Purchased " + purchaseQuantity + " " + medicineName, Toast.LENGTH_LONG).show();
+
+                                alertDialog.dismiss();
+                            }
+
+                        } else {
+                            Log.e(TAG, "Error retrieving medicine stock");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
+
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        }
+        alertDialog.show();
     }
 
     @Override

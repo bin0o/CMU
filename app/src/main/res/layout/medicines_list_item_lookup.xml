@@ -13,6 +13,7 @@
         android:layout_height="50.33dp"
         android:background="@drawable/medicine"
         android:layout_marginStart="20dp"
+        android:contentDescription="@string/medicine_icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />

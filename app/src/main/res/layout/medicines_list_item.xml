@@ -13,6 +13,7 @@
         android:layout_height="50.33dp"
         android:background="@drawable/medicine"
         android:layout_marginStart="20dp"
+        android:contentDescription="@string/medicine_icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
@@ -30,11 +31,11 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/add_medicine"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:focusable="false"
         android:layout_marginHorizontal="30dp"
-        android:background="@drawable/baseline_add_circle_outline_24"
+        android:background="@drawable/baseline_add_shopping_cart_grey_24"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
