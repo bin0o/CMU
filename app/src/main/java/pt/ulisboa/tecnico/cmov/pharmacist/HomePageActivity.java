@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,27 +53,29 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
 
         // Retrieve the destination address
         // To display a route to a pharmacy
-        String destinationAddress = getIntent().getStringExtra("destination_address");
+        String destinationAddress = getIntent().getStringExtra("pharmacy_address");
         if (destinationAddress != null) {
             Bundle bundle = new Bundle();
             bundle.putString("destination_address", destinationAddress);
             MapFragment mapFragment = new MapFragment();
             mapFragment.setArguments(bundle);
+            Log.d(TAG,"Asking route to " + destinationAddress);
+            getSupportFragmentManager().beginTransaction().replace(R.id.map_frame_layout, mapFragment).commit();
+        }
+        else{
+            // Check for location permissions
+            if (checkLocationPermission()) {
+                loadMapFragment();
+            } else {
+                requestLocationPermission();
+            }
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.map_frame_layout,  new MapFragment()).commit();
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.map_frame_layout, new MapFragment()).commit();
+                navigationView.setCheckedItem(R.id.nav_home);
+            }
         }
 
-        // Check for location permissions
-        if (checkLocationPermission()) {
-            loadMapFragment();
-        } else {
-            requestLocationPermission();
-        }
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.map_frame_layout, new MapFragment()).commit();
-            navigationView.setCheckedItem(R.id.nav_home);
-        }
     }
 
     private boolean checkLocationPermission() {

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,6 +72,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     public static Location currentLocation;
 
+    private String destinationAddress="";
+
     public static Address tagusAddress;
 
     private final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -117,13 +120,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
         // Retrieve the destination address from arguments
+        Log.d(TAG, "Arguments"+ String.valueOf(getArguments()));
         if (getArguments() != null) {
             String destinationAddress = getArguments().getString("destination_address");
             if (destinationAddress != null) {
-                displayRoute(destinationAddress);
+                Log.d(TAG,"destination"+destinationAddress);
+                this.destinationAddress = destinationAddress;
             }
         }
-
         return view;
     }
 
@@ -149,6 +153,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             loadFavoritePharmacies();
         }
 
+        if (!destinationAddress.isEmpty()){
+            displayRoute();
+        }
         setupMapInteraction();
     }
 
@@ -336,19 +343,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return null;
     }
 
-    private void displayRoute(String destinationAddress) {
-        if (currentLocation == null) {
-            Toast.makeText(getActivity(), "Current location not available", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void displayRoute() {
 
         LatLng start = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         LatLng destination = geocodeAddress(destinationAddress);
-
         // Add markers for the start and destination points
         MarkerOptions startMarkerOptions = new MarkerOptions().position(start).title("Current Location");
         MarkerOptions destinationMarkerOptions = new MarkerOptions().position(destination).title("Destination");
 
+        Log.d(TAG, "Map:" + map);
         map.addMarker(startMarkerOptions);
         map.addMarker(destinationMarkerOptions);
 
