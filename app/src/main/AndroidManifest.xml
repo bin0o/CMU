@@ -37,6 +37,9 @@
         <activity android:name=".AddPharmacyActivity" />
         <activity android:name=".PharmacyInformationPanelActivity" />
         <activity android:name=".MedicineInformationPanelActivity" />
+        <activity android:name=".ScanBarcodeActivity"
+            android:stateNotNeeded="true"
+            android:theme="@style/zxing_CaptureTheme" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />

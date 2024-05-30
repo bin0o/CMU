@@ -1,13 +1,12 @@
 package pt.ulisboa.tecnico.cmov.pharmacist;
 
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.*;
-import pt.ulisboa.tecnico.cmov.pharmacist.fragments.AddMedicineManualFragment;
+import pt.ulisboa.tecnico.cmov.pharmacist.fragments.AddMedicineBarcodeFragment;
 import pt.ulisboa.tecnico.cmov.pharmacist.fragments.PharmacyInformationPanelMapFragment;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
 
 import android.os.Bundle;
 import android.util.Log;
@@ -27,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentResultListener;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -160,19 +158,6 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
             }
         });
 
-        // Adds stock to an existing medicine or adds a new medicine
-        Button addMedicineButton = findViewById(R.id.add_medicine_button);
-        addMedicineButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putString("PharmacyName", pharmacyName);
-                AddMedicineManualFragment fragment = AddMedicineManualFragment.newInstance();
-                fragment.setArguments(bundle);
-                fragment.show(getSupportFragmentManager(), "InfoPanelMapFragment");
-            }
-        });
-
         // Gets the database
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -242,6 +227,19 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                         Intent intent = new Intent(PharmacyInformationPanelActivity.this, HomePageActivity.class);
                         intent.putExtra("pharmacy_address", pharmacyAddress);
                         startActivity(intent);
+                    }
+                });
+
+                // Adds stock to an existing medicine or adds a new medicine
+                Button addMedicineButton = findViewById(R.id.add_medicine_button);
+                addMedicineButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("PharmacyName", pharmacyName);
+                        AddMedicineBarcodeFragment fragment = AddMedicineBarcodeFragment.newInstance();
+                        fragment.setArguments(bundle);
+                        fragment.show(getSupportFragmentManager(), "AddMedicineStock");
                     }
                 });
             }

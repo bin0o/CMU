@@ -90,6 +90,14 @@ public class AddMedicineManualFragment extends DialogFragment {
         Bundle bundle = this.getArguments();
         pharmacyNameString = bundle.getString("PharmacyName");
 
+        Button closeButton = view.findViewById(R.id.close_button);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+
         // Gets the database
         mDatabase = FirebaseDatabase.getInstance().getReference();
 

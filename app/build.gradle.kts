@@ -83,5 +83,6 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
 
+    // Barcode dependency
     implementation(libs.zxing.android.embedded)
 }
