@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,6 +56,10 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
 
     ArrayAdapter<String> arrayAdapter = null;
 
+    ListView medicinesList = null;
+
+    String pharmacyName = null;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,14 +72,27 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
         mStorageRef = FirebaseStorage.getInstance();
 
         // Display available medicines
-        ListView medicinesList = findViewById(R.id.medicines_list);
+        medicinesList = findViewById(R.id.medicines_list);
 
         String userId = mAuth.getCurrentUser().getUid();
 
         DatabaseReference favsRef = mDatabase.child("UsersFavoritePharmacies").child(userId).child("favs");
 
         Bundle extras = getIntent().getExtras();
-        String pharmacyName = extras.getString("PharmacyName");
+        pharmacyName = extras.getString("PharmacyName");
+
+        // Set up the FragmentResultListener
+        getSupportFragmentManager().setFragmentResultListener(
+                "added",
+                this,
+                (requestKey, result) -> {
+                    if (result.getBoolean("added", false)) {
+                        // Medicine was added, refresh the list
+                        Log.d(TAG, "Medicine was added");
+                        getMedicinesFromDatabase(pharmacyName);
+                    }
+                }
+        );
 
         // Sets the customized toolbar in the view
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -82,6 +100,8 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ToggleButton favorite = findViewById(R.id.favorite);
+
+        getMedicinesFromDatabase(pharmacyName);
 
         // Initialize the ToggleButton state based on the database
         favsRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -137,6 +157,19 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                         Log.e("Firebase", "Error reading favorites", databaseError.toException());
                     }
                 });
+            }
+        });
+
+        // Adds stock to an existing medicine or adds a new medicine
+        Button addMedicineButton = findViewById(R.id.add_medicine_button);
+        addMedicineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("PharmacyName", pharmacyName);
+                AddMedicineManualFragment fragment = AddMedicineManualFragment.newInstance();
+                fragment.setArguments(bundle);
+                fragment.show(getSupportFragmentManager(), "InfoPanelMapFragment");
             }
         });
 
@@ -211,45 +244,6 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
-
-
-                Query queryMedicines = mDatabase.child("PharmacyMedicines").child(pharmacyName);
-                queryMedicines.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        List<String> medicineNames = new ArrayList<>();
-
-                        for (DataSnapshot medicineSnapshot : snapshot.getChildren()) {
-                            medicineNames.add(medicineSnapshot.getKey());
-                            Log.d(TAG, medicineSnapshot.getKey());
-                        }
-
-                        arrayAdapter = new ArrayAdapter<String>(PharmacyInformationPanelActivity.this,
-                                R.layout.medicines_list_item,
-                                R.id.medicine_name,
-                                medicineNames);
-
-                        medicinesList.setAdapter(arrayAdapter);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-
-                // Adds stock to an existing medicine or adds a new medicine
-                Button addMedicineButton = findViewById(R.id.add_medicine_button);
-                addMedicineButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Bundle bundle = new Bundle();
-                        bundle.putString("PharmacyAddress", address.getText().toString());
-                        AddMedicineManualFragment fragment = AddMedicineManualFragment.newInstance();
-                        fragment.setArguments(bundle);
-                        fragment.show(getSupportFragmentManager(), "InfoPanelMapFragment");
-                    }
-                });
             }
 
             @Override
@@ -301,6 +295,35 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void getMedicinesFromDatabase(String pharmacyName) {
+        Query queryMedicines = mDatabase.child("PharmacyMedicines").child(pharmacyName);
+        queryMedicines.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d(TAG, "entri");
+                Log.d(TAG, "Medicine query count: " + snapshot.getChildrenCount());
+                List<String> medicineNames = new ArrayList<>();
+
+                for (DataSnapshot medicineSnapshot : snapshot.getChildren()) {
+                    medicineNames.add(medicineSnapshot.getKey());
+                    Log.d(TAG, medicineSnapshot.getKey());
+                }
+
+                arrayAdapter = new ArrayAdapter<String>(PharmacyInformationPanelActivity.this,
+                        R.layout.medicines_list_item,
+                        R.id.medicine_name,
+                        medicineNames);
+
+                medicinesList.setAdapter(arrayAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override

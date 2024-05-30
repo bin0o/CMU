@@ -2,12 +2,15 @@ package pt.ulisboa.tecnico.cmov.pharmacist;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -24,6 +27,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +36,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,10 +59,15 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
     public static Location currentLocation;
     private List<Pharmacy> pharmacies;
 
+    private FirebaseStorage mStorageRef;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_medicine_information_panel);
+
+        // Gets the storage
+        mStorageRef = FirebaseStorage.getInstance();
 
         // Sets the customized toolbar in the view
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -92,8 +103,31 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 pharmacies.clear();
                 pharmaciesHelper.clear();
-                Log.d(TAG, "Number of pharmacies: " + dataSnapshot.getChildrenCount());
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                ImageView photoView = findViewById(R.id.medicine_image);
+
+                StorageReference photoRef = mStorageRef.getReferenceFromUrl(dataSnapshot.child("imageUrl").getValue(String.class));
+
+                // Set the maximum size to download in bytes (e.g., 1024 * 1024 for 1MB)
+                long ONE_MEGABYTE = 1024 * 1024;
+                photoRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Convert the byte array to a Bitmap
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        // Set the Bitmap to the ImageView
+                        photoView.setImageBitmap(bitmap);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                        exception.printStackTrace();
+                        Toast.makeText(MedicineInformationPanelActivity.this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                for (DataSnapshot snapshot : dataSnapshot.child("pharmacies").getChildren()) {
                     String pharmacyName = snapshot.getKey();
                     Log.d(TAG, "Pharmacy name: " + pharmacyName);
                     DatabaseReference pharmacyRef = FirebaseDatabase.getInstance().getReference("Pharmacy").child(pharmacyName);

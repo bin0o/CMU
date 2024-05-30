@@ -201,7 +201,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     String key = medicineSnapshot.getKey();
                     if (key != null && key.toLowerCase().contains(queryAddress[0].toLowerCase())) {
                         Map<String, Integer> pharmacies = new HashMap<>();
-                        for (DataSnapshot pharmacySnapshot : medicineSnapshot.getChildren()) {
+                        for (DataSnapshot pharmacySnapshot : medicineSnapshot.child("pharmacies").getChildren()) {
                             String pharmacyName = pharmacySnapshot.getKey();
                             Integer quantity = pharmacySnapshot.getValue(Integer.class);
                             if (pharmacyName != null && quantity != null) {
