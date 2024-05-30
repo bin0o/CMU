@@ -85,4 +85,6 @@ dependencies {
 
     // Barcode dependency
     implementation(libs.zxing.android.embedded)
+
+    implementation(libs.google.maps.services)
 }

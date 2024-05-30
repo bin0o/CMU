@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -46,12 +47,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import com.google.maps.DirectionsApi;
+import com.google.maps.GeoApiContext;
+import com.google.maps.PendingResult;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.TravelMode;
+
+import org.joda.time.DateTime;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Medicine;
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Pharmacy;
@@ -151,11 +162,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         } else {
             onLocationPermissionGranted();
             loadFavoritePharmacies();
+
+            if (!destinationAddress.isEmpty()){
+                try {
+                    displayRoute();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                } catch (ApiException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
-        if (!destinationAddress.isEmpty()){
-            displayRoute();
-        }
         setupMapInteraction();
     }
 
@@ -325,7 +345,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-
     private LatLng geocodeAddress(String address) {
         Geocoder geocoder = new Geocoder(getActivity());
         try {
@@ -343,24 +362,54 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return null;
     }
 
-    private void displayRoute() {
+    private GeoApiContext getGeoContext() {
+        GeoApiContext geoApiContext = new GeoApiContext();
+        return geoApiContext.setQueryRateLimit(3).setApiKey(getString(R.string.api_key))
+                .setConnectTimeout(1, TimeUnit.SECONDS)
+                .setReadTimeout(1, TimeUnit.SECONDS)
+                .setWriteTimeout(1, TimeUnit.SECONDS);
+    }
+
+    private void displayRoute() throws IOException, InterruptedException, ApiException {
 
         LatLng start = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         LatLng destination = geocodeAddress(destinationAddress);
-        // Add markers for the start and destination points
-        MarkerOptions startMarkerOptions = new MarkerOptions().position(start).title("Current Location");
-        MarkerOptions destinationMarkerOptions = new MarkerOptions().position(destination).title("Destination");
 
-        Log.d(TAG, "Map:" + map);
-        map.addMarker(startMarkerOptions);
-        map.addMarker(destinationMarkerOptions);
+        new FetchDirectionsTask().execute(start, destination);
+    }
 
-        // Draw the polyline on the map
-        map.addPolyline(new PolylineOptions()
-                .add(start,destination)
-                .width(10)
-                .color(Color.BLUE)
-                .geodesic(true));
+    private class FetchDirectionsTask extends AsyncTask<LatLng, Void, DirectionsResult> {
+        @Override
+        protected DirectionsResult doInBackground(LatLng... params) {
+            LatLng start = params[0];
+            LatLng destination = params[1];
+
+            GeoApiContext geoApiContext = getGeoContext();
+
+            try {
+                return DirectionsApi.newRequest(geoApiContext)
+                        .origin(new com.google.maps.model.LatLng(start.latitude, start.longitude))
+                        .destination(new com.google.maps.model.LatLng(destination.latitude, destination.longitude))
+                        .mode(TravelMode.DRIVING) // Specify travel mode (DRIVING, WALKING, BICYCLING)
+                        .await();
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to get directions: " + e.getMessage());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(DirectionsResult result) {
+            if (result != null && result.routes != null && result.routes.length > 0) {
+                com.google.maps.model.LatLng[] path = result.routes[0].overviewPolyline.decodePath().toArray(new com.google.maps.model.LatLng[0]);
+                PolylineOptions polylineOptions = new PolylineOptions();
+                for (com.google.maps.model.LatLng latLng : path) {
+                    polylineOptions.add(new LatLng(latLng.lat, latLng.lng));
+                }
+                polylineOptions.width(10).color(Color.BLUE).geodesic(true);
+                map.addPolyline(polylineOptions);
+            }
+        }
     }
 
     private String findClosestAddressToCurrentLocation(List<String> addressList) {
