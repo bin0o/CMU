@@ -17,6 +17,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
@@ -36,6 +37,7 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
+
         // Initialize Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -50,6 +52,8 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        navigationView.setCheckedItem(R.id.nav_home);
 
         // Retrieve the destination address
         // To display a route to a pharmacy
@@ -68,11 +72,6 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
                 loadMapFragment();
             } else {
                 requestLocationPermission();
-            }
-
-            if (savedInstanceState == null) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.map_frame_layout, new MapFragment()).commit();
-                navigationView.setCheckedItem(R.id.nav_home);
             }
         }
 
@@ -149,8 +148,28 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
            Intent intent = new Intent(HomePageActivity.this, WelcomeActivity.class);
            startActivity(intent);
        }
+       else {
+           return false;
+       }
 
-       drawerLayout.close();
-       return true;
+        // Uncheck the selected item and close the drawer
+        menuItem.setChecked(false);
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void resetNavigationView() {
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        for (int i = 0; i < navigationView.getMenu().size(); i++) {
+            navigationView.getMenu().getItem(i).setChecked(false);
+        }
+        // Highlight the home button
+        navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        resetNavigationView();
     }
 }

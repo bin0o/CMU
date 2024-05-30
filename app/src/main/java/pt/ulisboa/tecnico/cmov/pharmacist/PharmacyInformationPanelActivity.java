@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.pharmacist;
 
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.*;
+import pt.ulisboa.tecnico.cmov.pharmacist.adapter.MedicineAdapter;
 import pt.ulisboa.tecnico.cmov.pharmacist.fragments.AddMedicineBarcodeFragment;
 import pt.ulisboa.tecnico.cmov.pharmacist.fragments.PharmacyInformationPanelMapFragment;
 
@@ -42,7 +43,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PharmacyInformationPanelActivity extends AppCompatActivity {
+public class PharmacyInformationPanelActivity extends AppCompatActivity implements MedicineAdapter.OnAddMedicineClickListener {
 
     private final String TAG = "PharmacyInformationPanelActivity";
 
@@ -52,7 +53,7 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
-    ArrayAdapter<String> arrayAdapter = null;
+    MedicineAdapter medicineAdapter = null;
 
     ListView medicinesList = null;
 
@@ -274,9 +275,9 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
         mapSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             public boolean onQueryTextSubmit(String query) {
                 if (query.isEmpty()) {
-                    arrayAdapter.getFilter().filter("");
+                    medicineAdapter.getFilter().filter("");
                 } else {
-                    arrayAdapter.getFilter().filter(query);
+                    medicineAdapter.getFilter().filter(query);
                 }
                 return false;
             }
@@ -284,9 +285,9 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.isEmpty()) {
-                    arrayAdapter.getFilter().filter("");
+                    medicineAdapter.getFilter().filter("");
                 } else {
-                    arrayAdapter.getFilter().filter(newText);
+                    medicineAdapter.getFilter().filter(newText);
                 }
                 return true;
             }
@@ -308,12 +309,8 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
                     Log.d(TAG, medicineSnapshot.getKey());
                 }
 
-                arrayAdapter = new ArrayAdapter<String>(PharmacyInformationPanelActivity.this,
-                        R.layout.medicines_list_item,
-                        R.id.medicine_name,
-                        medicineNames);
-
-                medicinesList.setAdapter(arrayAdapter);
+                medicineAdapter = new MedicineAdapter(PharmacyInformationPanelActivity.this, medicineNames, PharmacyInformationPanelActivity.this);
+                medicinesList.setAdapter(medicineAdapter);
             }
 
             @Override
@@ -321,6 +318,13 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onAddMedicineClick(String medicineName) {
+        // Handle the button click event here
+        Toast.makeText(this, "Add " + medicineName, Toast.LENGTH_SHORT).show();
+        // Add your logic to handle the add medicine button click event
     }
 
     @Override
