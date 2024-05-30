@@ -7,30 +7,23 @@ import java.util.Map;
 
 public class Medicine {
 
-    private Map<String, Integer> pharmacies; // Map of pharmacy names to quantities
+    private List<String> pharmacies; // Map of pharmacy names to quantities
 
     public Medicine() {
         // Default constructor required for Firebase
     }
 
-    public Medicine(Map<String, Integer> pharmacies) {
+    public Medicine(List<String> pharmacies) {
         this.pharmacies = pharmacies;
     }
 
-    public Map<String, Integer> getPharmacies() {
-        return pharmacies;
-    }
 
-    public void setPharmacies(Map<String, Integer> pharmacies) {
+    public void setPharmacies(List<String> pharmacies) {
         this.pharmacies = pharmacies;
     }
 
     public List<String> getPharmacyNames() {
-        return new ArrayList<>(pharmacies.keySet());
-    }
-
-    public int getQuantity(String medicineName) {
-        return pharmacies.getOrDefault(medicineName, 0);
+        return pharmacies;
     }
 
     @Override

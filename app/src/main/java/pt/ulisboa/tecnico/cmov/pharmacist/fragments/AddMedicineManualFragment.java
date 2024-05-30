@@ -70,10 +70,6 @@ public class AddMedicineManualFragment extends DialogFragment {
 
     private ImageView photoView;
 
-    Map<String, Integer> pharmacies = new HashMap<>();
-
-    Map<String, Integer> medicines = new HashMap<>();
-
     public AddMedicineManualFragment() {
         // Required empty public constructor
     }
@@ -205,17 +201,10 @@ public class AddMedicineManualFragment extends DialogFragment {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                pharmacies.clear();
-
-                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                    String pharmacyName = childSnapshot.getKey();
-                    Integer quantity = childSnapshot.getValue(Integer.class);
-
-                    pharmacies.put(pharmacyName, quantity);
-                }
+                List<String> pharmacies = new ArrayList<>();;
 
                 Log.d(TAG, "Pharmacies: " + pharmacies);
-                pharmacies.put(pharmacyName, quantity);
+                pharmacies.add(pharmacyName);
 
                 mDatabase.child("Medicines").child(medicineName).child("pharmacies").setValue(pharmacies);
             }
@@ -226,22 +215,12 @@ public class AddMedicineManualFragment extends DialogFragment {
             }
         });
 
-        Query query1 = mDatabase.child("PharmacyMedicines").child(pharmacyName);
+        Query query1 = mDatabase.child("PharmacyMedicines").child(pharmacyName).child(medicineName);
         query1.addListenerForSingleValueEvent( new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                medicines.clear();
 
-                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                    String medicineName = childSnapshot.getKey();
-                    Integer quantity = childSnapshot.getValue(Integer.class);
-
-                    medicines.put(medicineName, quantity);
-                }
-                Log.d(TAG, "Medicines: " + medicines);
-                medicines.put(medicineName, quantity);
-
-                mDatabase.child("PharmacyMedicines").child(pharmacyName).setValue(medicines);
+                mDatabase.child("PharmacyMedicines").child(pharmacyName).child(medicineName).setValue(quantity);
 
                 Bundle result = new Bundle();
 

@@ -186,21 +186,16 @@ public class AddMedicineBarcodeFragment extends DialogFragment {
                                 queryMedicinePharmacy.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        Map<String, Integer> pharmacies = new HashMap<>();
-                                        int stockTemp = stock;
+                                        List<String> pharmacies = new ArrayList<>();
 
                                         for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                                            String pharmacyNameTemp = childSnapshot.getKey();
-                                            Integer quantity = childSnapshot.getValue(Integer.class);
+                                            String pharmacyNameTemp = childSnapshot.getValue(String.class);
 
-                                            if (pharmacyNameTemp.equals(pharmacyName)) {
-                                                stockTemp = quantity + stock;
-                                            }
-                                            pharmacies.put(pharmacyNameTemp, quantity);
+                                            pharmacies.add(pharmacyNameTemp);
                                         }
 
                                         Log.d(TAG, "Pharmacies: " + pharmacies);
-                                        pharmacies.put(pharmacyName, stockTemp);
+                                        pharmacies.add(pharmacyName);
 
                                         mDatabase.child("Medicines").child(medicineName).child("pharmacies").setValue(pharmacies);
                                     }
@@ -215,22 +210,14 @@ public class AddMedicineBarcodeFragment extends DialogFragment {
                                 queryPharmacy.addListenerForSingleValueEvent( new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        Map<String, Integer> medicines = new HashMap<>();
-                                        int stockTemp = stock;
+                                        int quantity = 0;
 
-                                        for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                                            String medicineNameTemp = childSnapshot.getKey();
-                                            Integer quantity = childSnapshot.getValue(Integer.class);
-
-                                            if (medicineNameTemp.equals(medicineName)) {
-                                                stockTemp = quantity + stock;
-                                            }
-                                            medicines.put(medicineNameTemp, quantity);
+                                        if (snapshot.child(medicineName).exists()) {
+                                            quantity = snapshot.child(medicineName).getValue(Integer.class);
                                         }
-                                        Log.d(TAG, "Medicines: " + medicines);
-                                        medicines.put(medicineName, stockTemp);
+                                        quantity = quantity + stock;
 
-                                        mDatabase.child("PharmacyMedicines").child(pharmacyName).setValue(medicines);
+                                        mDatabase.child("PharmacyMedicines").child(pharmacyName).child(medicineName).setValue(quantity);
 
                                         Bundle result = new Bundle();
 
