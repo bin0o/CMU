@@ -91,6 +91,15 @@ public class AddMedicineBarcodeFragment extends DialogFragment {
             }
         });
 
+        Button addMedicine = view.findViewById(R.id.add_medicine_button);
+
+        addMedicine.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Scan the Barcode of the Medicine you want to add!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return view;
     }
 
@@ -163,12 +172,15 @@ public class AddMedicineBarcodeFragment extends DialogFragment {
                             @Override
                             public void onClick(View v) {
                                 EditText quantity = view.findViewById(R.id.medicine_quantity);
-                                Integer stock = Integer.parseInt(quantity.getText().toString());
 
                                 if (TextUtils.isEmpty(quantity.getText().toString())) {
                                     Toast.makeText(getActivity(), "Please enter the quantity to add!", Toast.LENGTH_LONG).show();
                                     return;
                                 }
+
+                                Integer stock = Integer.parseInt(quantity.getText().toString());
+
+                                Log.d(TAG, "Stock: " + stock);
 
                                 Query queryMedicinePharmacy = mDatabase.child("Medicines").child(medicineName).child("pharmacies");
                                 queryMedicinePharmacy.addListenerForSingleValueEvent(new ValueEventListener() {
