@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.pharmacist;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -156,6 +159,28 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e(TAG, "Failed to read medicine data", error.toException());
+            }
+        });
+
+        pharmaciesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected PharmacyHelper object
+                PharmacyHelper pharmacyHelper = (PharmacyHelper) parent.getItemAtPosition(position);
+
+                // Extract the pharmacy name from the PharmacyHelper object
+                String pharmacyName = pharmacyHelper.getName();
+
+                Log.d(TAG, "Selected pharmacy: " + pharmacyName);
+
+                // Create an intent to start the MedicineInformationPanelActivity
+                Intent intent = new Intent(MedicineInformationPanelActivity.this, PharmacyInformationPanelActivity.class);
+
+                // Pass the medicine name to the next activity
+                intent.putExtra("PharmacyName", pharmacyName);
+
+                // Start the activity
+                startActivity(intent);
             }
         });
 
