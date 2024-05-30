@@ -395,6 +395,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         .await();
             } catch (Exception e) {
                 Log.e(TAG, "Failed to get directions: " + e.getMessage());
+                Toast.makeText(getActivity(), "Failed to get directions", Toast.LENGTH_SHORT).show();
                 return null;
             }
         }
@@ -407,7 +408,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 for (com.google.maps.model.LatLng latLng : path) {
                     polylineOptions.add(new LatLng(latLng.lat, latLng.lng));
                 }
-                polylineOptions.width(10).color(Color.BLUE).geodesic(true);
+                polylineOptions.width(10).color(Color.RED).geodesic(true);
                 map.addPolyline(polylineOptions);
             }
         }
@@ -435,8 +436,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     }
                 }
             }
-
-
         }
         return closestAddress;
     }
