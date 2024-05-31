@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,6 +68,10 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
 
     String pharmacyName = null;
 
+    RatingBar ratingBar = null;
+
+    Button rate = null;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +85,10 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
 
         // Display available medicines
         medicinesList = findViewById(R.id.medicines_list);
+
+        ratingBar = findViewById(R.id.rating_bar);
+
+        rate = findViewById(R.id.rate_button);
 
         String userId = mAuth.getCurrentUser().getUid();
 
@@ -98,6 +107,27 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
                     }
                 }
         );
+
+        Query ratingQuery = mDatabase.child("PharmacyRatings").child(pharmacyName);
+
+        ratingQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ratingBar.setRating(snapshot.getValue(Float.class));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        rate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         // Sets the customized toolbar in the view
         Toolbar toolbar = findViewById(R.id.toolbar);

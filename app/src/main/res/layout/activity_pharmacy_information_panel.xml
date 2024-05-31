@@ -20,7 +20,6 @@
             android:id="@+id/pharmacy_image"
             android:layout_width="0dp"
             android:layout_height="225dp"
-            android:layout_marginBottom="20dp"
             android:adjustViewBounds="true"
             android:alpha="0.4"
             android:contentDescription="@string/pharmacy_image"
@@ -45,6 +44,29 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constrainedWidth="true" />
 
+        <androidx.appcompat.widget.AppCompatRatingBar
+            android:id="@+id/rating_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="7.5dp"
+            android:progressTint="@color/yellow"
+            style="@style/Widget.AppCompat.RatingBar.Small"
+            app:layout_constraintBottom_toBottomOf="@id/pharmacy_image"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/rate_button"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:text="Rate"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/pharmacy_address"
+            app:layout_constraintBottom_toBottomOf="@id/pharmacy_image"
+            app:layout_constraintStart_toEndOf="@+id/rating_bar"/>
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/open_map_button"
             android:layout_width="25dp"
@@ -52,7 +74,7 @@
             android:background="@drawable/baseline_location_on_24"
             android:layout_marginStart="20dp"
             android:layout_marginBottom="10dp"
-            app:layout_constraintBottom_toBottomOf="@id/pharmacy_image"
+            app:layout_constraintBottom_toTopOf="@id/rating_bar"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <androidx.appcompat.widget.AppCompatButton
@@ -61,7 +83,7 @@
             android:layout_height="25dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/baseline_directions_24"
-            app:layout_constraintBottom_toBottomOf="@id/pharmacy_image"
+            app:layout_constraintBottom_toTopOf="@id/rating_bar"
             app:layout_constraintStart_toEndOf="@+id/open_map_button"
             app:layout_constraintEnd_toStartOf="@id/pharmacy_address"/>
 
@@ -75,7 +97,7 @@
             android:text="@string/address"
             android:textSize="18sp"
             android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="@id/pharmacy_image"
+            app:layout_constraintBottom_toTopOf="@id/rating_bar"
             app:layout_constraintStart_toEndOf="@+id/directions_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constrainedWidth="true" />

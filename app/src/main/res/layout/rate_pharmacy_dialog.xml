@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scan_success_layout"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/dialog_layout"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:paddingBottom="15dp"
+        android:background="@drawable/dialog_bkg"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" >
+
+        <TextView
+            android:id="@+id/success_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rate Pharmacy"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:paddingTop="28dp"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatRatingBar
+            android:id="@+id/rate_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:progressTint="@color/yellow"
+            style="@style/Widget.AppCompat.RatingBar.Indicator"
+            app:layout_constraintTop_toBottomOf="@id/success_title"
+            app:layout_constraintBottom_toTopOf="@id/rate_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            android:id="@+id/rate_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginHorizontal="40dp"
+            android:text="Rate"
+            android:backgroundTint="@color/yellow"
+            app:cornerRadius="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rate_bar" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/success_icon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/rate_circle_background"
+        android:layout_marginHorizontal="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
