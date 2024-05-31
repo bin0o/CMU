@@ -5,6 +5,7 @@ import pt.ulisboa.tecnico.cmov.pharmacist.adapter.MedicineAdapter;
 import pt.ulisboa.tecnico.cmov.pharmacist.fragments.AddMedicineBarcodeFragment;
 import pt.ulisboa.tecnico.cmov.pharmacist.fragments.PharmacyInformationPanelMapFragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -46,7 +47,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PharmacyInformationPanelActivity extends AppCompatActivity implements MedicineAdapter.OnAddMedicineClickListener {
 
@@ -134,7 +137,7 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
                 favsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        List<String> favs = new ArrayList<>();
+                        Set<String> favs = new HashSet<>();
                         if (dataSnapshot.exists()) {
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 favs.add(snapshot.getValue(String.class));
@@ -144,16 +147,21 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
                         if (favorite.isChecked()) {
                             if (!favs.contains(pharmacyName)) {
                                 favs.add(pharmacyName);
-                                favsRef.setValue(favs);
+                                favsRef.setValue(new ArrayList<>(favs));
                                 Toast.makeText(PharmacyInformationPanelActivity.this, "Added to favorites", Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             if (favs.contains(pharmacyName)) {
                                 favs.remove(pharmacyName);
-                                favsRef.setValue(favs);
+                                favsRef.setValue(new ArrayList<>(favs));
                                 Toast.makeText(PharmacyInformationPanelActivity.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
                             }
                         }
+                        Context context = getApplicationContext();
+                        CacheUtils.saveFavoritePharmacies(context, favs);
+
+                        // Log the cache update
+                        Log.d("FavoritePharmacies", "Favorite pharmacies updated and cache updated");
                     }
 
                     @Override

@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.pharmacist;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -20,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -210,10 +213,21 @@ public class AddPharmacyActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "addPharmacy: Pharmacy added successfully");
+
                             Toast.makeText(AddPharmacyActivity.this, "Pharmacy added successfully", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(AddPharmacyActivity.this, HomePageActivity.class);
-                            startActivity(intent);
+
+                            // update cache with new pharmacy
+                            Context context = getApplicationContext();
+                            List<Pharmacy> pharmacies = CacheUtils.getPharmacies(context);
+                            if (pharmacies == null) {
+                                pharmacies = new ArrayList<>();
+                            }
+                            pharmacies.add(pharmacy);
+                            CacheUtils.savePharmacies(context, pharmacies);
+
+                            Log.d("AddPharmacyActivity", "New pharmacy added and cache updated");
+
+                            finish();
                         } else {
                             Log.e(TAG, "addPharmacy: Failed to add pharmacy", task.getException());
                             Toast.makeText(AddPharmacyActivity.this, "Failed to add pharmacy", Toast.LENGTH_SHORT).show();

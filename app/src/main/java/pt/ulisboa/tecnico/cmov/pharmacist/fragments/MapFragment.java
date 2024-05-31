@@ -150,7 +150,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
+     public void onMapReady(@NonNull GoogleMap googleMap) {
         map = googleMap;
         map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         map.getUiSettings().setZoomControlsEnabled(true);
@@ -286,7 +286,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public void loadFavoritePharmacies() {
-        // Retrieve favorite pharmacies for the authenticated user
+        // Check if cache is valid
+        if (CacheUtils.isCacheValid(getActivity())) {
+            List<String> cachedFavoritePharmacies = CacheUtils.getFavoritePharmacies(getActivity());
+            if (cachedFavoritePharmacies != null) {
+                favoritePharmacies.clear();
+                favoritePharmacies.addAll(cachedFavoritePharmacies);
+                loadPharmaciesFromDatabase();
+                return;
+            }
+        }
+
+        // If cache is not valid or empty, load from Firebase
         Query query = mDatabase.child("UsersFavoritePharmacies").child(mAuth.getCurrentUser().getUid()).child("favs");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -301,14 +312,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         favoritePharmacies.add(favPharmacy);
                     }
                 }
+
+                // Save favorite pharmacies to cache
+                CacheUtils.saveFavoritePharmacies(getActivity(), favoritePharmacies);
+
                 loadPharmaciesFromDatabase();
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, "Failed to retrieve favorite pharmacies: " + databaseError.getMessage());
             }
         });
-
     }
 
     public void loadPharmaciesFromDatabase() {
@@ -358,7 +373,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         map.addMarker(markerOptions);
                     }
                 }
-                // Save loaded pharmacies to cac
+                // Save loaded pharmacies to cache
                 CacheUtils.savePharmacies(getActivity(), pharmacies);
             }
 
