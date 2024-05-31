@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +32,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -60,15 +62,26 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
     public static Location currentLocation;
     private List<Pharmacy> pharmacies;
 
+    private FirebaseDatabase mDatabase;
+
     private FirebaseStorage mStorageRef;
+
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_medicine_information_panel);
 
+        mDatabase = FirebaseDatabase.getInstance();
+
         // Gets the storage
         mStorageRef = FirebaseStorage.getInstance();
+
+        // Initialize FirebaseAuth instance
+        mAuth = FirebaseAuth.getInstance();
+
+        String userId = mAuth.getCurrentUser().getUid();
 
         // Sets the customized toolbar in the view
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -96,8 +109,68 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
         pharmacyAdapter = new PharmacyAdapter(this, pharmaciesHelper);
         pharmaciesList.setAdapter(pharmacyAdapter);
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Medicines");
-        Query query = databaseReference.child(medicineName);
+        ToggleButton notifications = findViewById(R.id.notifications);
+
+        DatabaseReference notificationsRef = mDatabase.getReference().child("UsersNotifications").child(userId).child("notifications");
+
+        notificationsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<String> nots = new ArrayList<>();
+                if (snapshot.exists()) {
+                    for (DataSnapshot notSnapshot : snapshot.getChildren()) {
+                        nots.add(notSnapshot.getValue(String.class));
+                    }
+                }
+
+                // Set the initial state of the ToggleButton
+                notifications.setChecked(nots.contains(medicineName));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        notifications.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notificationsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        List<String> nots = new ArrayList<>();
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                nots.add(snapshot.getValue(String.class));
+                            }
+                        }
+
+                        if (notifications.isChecked()) {
+                            if (!nots.contains(medicineName)) {
+                                nots.add(medicineName);
+                                notificationsRef.setValue(nots);
+                                Toast.makeText(MedicineInformationPanelActivity.this, "Notifications for " + medicineName + " enabled", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            if (nots.contains(medicineName)) {
+                                nots.remove(medicineName);
+                                notificationsRef.setValue(nots);
+                                Toast.makeText(MedicineInformationPanelActivity.this, "Notifications for " + medicineName + " disabled", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("Firebase", "Error reading favorites", databaseError.toException());
+                    }
+                });
+            }
+        });
+
+
+        Query query = mDatabase.getReference().child("Medicines").child(medicineName);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

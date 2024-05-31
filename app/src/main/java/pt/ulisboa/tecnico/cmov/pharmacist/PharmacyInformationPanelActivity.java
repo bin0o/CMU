@@ -80,8 +80,6 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
 
         String userId = mAuth.getCurrentUser().getUid();
 
-        DatabaseReference favsRef = mDatabase.child("UsersFavoritePharmacies").child(userId).child("favs");
-
         Bundle extras = getIntent().getExtras();
         pharmacyName = extras.getString("PharmacyName");
 
@@ -106,6 +104,8 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
         ToggleButton favorite = findViewById(R.id.favorite);
 
         getMedicinesFromDatabase(pharmacyName);
+
+        DatabaseReference favsRef = mDatabase.child("UsersFavoritePharmacies").child(userId).child("favs");
 
         // Initialize the ToggleButton state based on the database
         favsRef.addListenerForSingleValueEvent(new ValueEventListener() {
