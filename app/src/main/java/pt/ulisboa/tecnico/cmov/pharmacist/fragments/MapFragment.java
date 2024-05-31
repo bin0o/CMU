@@ -190,7 +190,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-        loadFavoritePharmacies();
         if (map != null && mCameraPosition != null) {
             map.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
             isCameraPositionSaved = true;
@@ -336,7 +335,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     String name = pharmacy.getName();
                     LatLng latLng = geocodeAddress(address);
 
-                    MarkerOptions markerOptions;
+                    MarkerOptions markerOptions = null;
                     if (favoritePharmacies.contains(name)) {
                         markerOptions = new MarkerOptions().position(latLng).title(name).icon(getMarkerIcon("#FFD700"));
                     } else {
