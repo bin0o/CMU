@@ -50,6 +50,8 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.Set;
 
 public class PharmacyInformationPanelActivity extends AppCompatActivity implements MedicineAdapter.OnAddMedicineClickListener {
@@ -70,7 +72,9 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
 
     RatingBar ratingBar = null;
 
-    Button rate = null;
+    Button rateButton = null;
+
+    String userId = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,9 +92,9 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
 
         ratingBar = findViewById(R.id.rating_bar);
 
-        rate = findViewById(R.id.rate_button);
+        rateButton = findViewById(R.id.rate_button);
 
-        String userId = mAuth.getCurrentUser().getUid();
+        userId = mAuth.getCurrentUser().getUid();
 
         Bundle extras = getIntent().getExtras();
         pharmacyName = extras.getString("PharmacyName");
@@ -105,27 +109,30 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
                         Log.d(TAG, "Medicine was added");
                         getMedicinesFromDatabase(pharmacyName);
                     }
+
                 }
         );
 
-        Query ratingQuery = mDatabase.child("PharmacyRatings").child(pharmacyName);
+        // Set up the FragmentResultListener
+        getSupportFragmentManager().setFragmentResultListener(
+                "rated",
+                this,
+                (requestKey, result) -> {
+                    if (result.getBoolean("added", false)) {
+                        // Rating was done, refresh the rating
+                        Log.d(TAG, "rating was added");
+                        initialRate();
+                    }
 
-        ratingQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ratingBar.setRating(snapshot.getValue(Float.class));
-            }
+                }
+        );
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+        initialRate();
 
-            }
-        });
-
-        rate.setOnClickListener(new View.OnClickListener() {
+        rateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                onAddRatingClick();
             }
         });
 
@@ -463,6 +470,69 @@ public class PharmacyInformationPanelActivity extends AppCompatActivity implemen
         }
         alertDialog.show();
     }
+
+    private void onAddRatingClick() {
+        ConstraintLayout rateLayout = findViewById(R.id.rate_layout);
+        View viewRate = LayoutInflater.from(PharmacyInformationPanelActivity.this).inflate(R.layout.rate_pharmacy_dialog, rateLayout);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(PharmacyInformationPanelActivity.this);
+        builder.setView(viewRate);
+        final AlertDialog alertDialog = builder.create();
+
+        RatingBar rate = viewRate.findViewById(R.id.rate_bar);
+
+        rate.setStepSize(0.5f);
+        rate.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+            }
+        });
+
+        Button sendRatingButton = viewRate.findViewById(R.id.rate_button);
+        sendRatingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDatabase.child("PharmacyRatings").child(pharmacyName).child(userId).setValue(rate.getRating());
+
+                Bundle result = new Bundle();
+
+                result.putBoolean("added", true);
+
+                getSupportFragmentManager().setFragmentResult("rated",result);
+
+                Toast.makeText(PharmacyInformationPanelActivity.this, "Rated " + rate.getRating() + " stars for " + pharmacyName, Toast.LENGTH_LONG).show();
+
+                alertDialog.dismiss();
+            }
+        });
+
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        }
+        alertDialog.show();
+
+    }
+
+    private void initialRate() {
+        Query ratingQuery = mDatabase.child("PharmacyRatings").child(pharmacyName);
+
+        ratingQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                float ratings = 0;
+                for (DataSnapshot ratingSnapshot : snapshot.getChildren()) {
+                    ratings += ratingSnapshot.getValue(Float.class);
+                }
+                ratingBar.setRating( ratings / snapshot.getChildrenCount());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
