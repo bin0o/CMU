@@ -60,7 +60,6 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
     private List<PharmacyHelper> pharmaciesHelper;
     public FusedLocationProviderClient client;
     public static Location currentLocation;
-    private List<Pharmacy> pharmacies;
 
     private FirebaseDatabase mDatabase;
 
@@ -104,7 +103,6 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
 
         pharmaciesList = findViewById(R.id.pharmacies_list);
         pharmaciesHelper = new ArrayList<>();
-        pharmacies = new ArrayList<>();
 
         pharmacyAdapter = new PharmacyAdapter(this, pharmaciesHelper);
         pharmaciesList.setAdapter(pharmacyAdapter);
@@ -175,7 +173,6 @@ public class MedicineInformationPanelActivity extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                pharmacies.clear();
                 pharmaciesHelper.clear();
 
                 ImageView photoView = findViewById(R.id.medicine_image);
