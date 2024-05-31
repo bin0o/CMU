@@ -62,6 +62,7 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
+import pt.ulisboa.tecnico.cmov.pharmacist.CacheUtils;
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Medicine;
 import pt.ulisboa.tecnico.cmov.pharmacist.DatabaseClasses.Pharmacy;
 import pt.ulisboa.tecnico.cmov.pharmacist.PharmacyInformationPanelActivity;
@@ -311,32 +312,54 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public void loadPharmaciesFromDatabase() {
-        // Retrieve pharmacy data from Firebase Realtime Database
+        // Check if cache is valid
+        if (CacheUtils.isCacheValid(getActivity())) {
+            List<Pharmacy> cachedPharmacies = CacheUtils.getPharmacies(getActivity());
+            if (cachedPharmacies != null) {
+                for (Pharmacy pharmacy : cachedPharmacies) {
+                    String address = pharmacy.getAddress();
+                    String name = pharmacy.getName();
+                    LatLng latLng = geocodeAddress(address);
+
+                    MarkerOptions markerOptions;
+                    if (favoritePharmacies.contains(name)) {
+                        markerOptions = new MarkerOptions().position(latLng).title(name).icon(getMarkerIcon("#FFD700"));
+                    } else {
+                        markerOptions = new MarkerOptions().position(latLng).title(name);
+                    }
+                    markers.add(markerOptions);
+                    map.addMarker(markerOptions);
+                }
+                return;
+            }
+        }
+
+        // If cache is not valid or empty, load from Firebase
         Query queryPharmacies = mDatabase.child("Pharmacy");
         queryPharmacies.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Pharmacy> pharmacies = new ArrayList<>();
                 for (DataSnapshot pharmacySnapshot : dataSnapshot.getChildren()) {
                     Pharmacy pharmacy = pharmacySnapshot.getValue(Pharmacy.class);
                     if (pharmacy != null) {
+                        pharmacies.add(pharmacy);
                         String address = pharmacy.getAddress();
                         String name = pharmacy.getName();
                         LatLng latLng = geocodeAddress(address);
 
-                        // Check if the pharmacy name is in the favorite pharmacies set
                         MarkerOptions markerOptions;
                         if (favoritePharmacies.contains(name)) {
-                            // set marker color to golden
                             markerOptions = new MarkerOptions().position(latLng).title(name).icon(getMarkerIcon("#FFD700"));
                         } else {
-                            // Otherwise, use default marker color
                             markerOptions = new MarkerOptions().position(latLng).title(name);
                         }
                         markers.add(markerOptions);
                         map.addMarker(markerOptions);
-                        Log.d(TAG, "Pharmacy: " + name + ", Address: " + address);
                     }
                 }
+                // Save loaded pharmacies to cac
+                CacheUtils.savePharmacies(getActivity(), pharmacies);
             }
 
             @Override
@@ -395,6 +418,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         .await();
             } catch (Exception e) {
                 Log.e(TAG, "Failed to get directions: " + e.getMessage());
+                Toast.makeText(getActivity(), "Failed to get directions", Toast.LENGTH_SHORT).show();
                 return null;
             }
         }
@@ -407,7 +431,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 for (com.google.maps.model.LatLng latLng : path) {
                     polylineOptions.add(new LatLng(latLng.lat, latLng.lng));
                 }
-                polylineOptions.width(10).color(Color.BLUE).geodesic(true);
+                polylineOptions.width(10).color(Color.RED).geodesic(true);
                 map.addPolyline(polylineOptions);
             }
         }
@@ -435,8 +459,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     }
                 }
             }
-
-
         }
         return closestAddress;
     }
