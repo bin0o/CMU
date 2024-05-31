@@ -34,6 +34,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:focusable="false"
+        android:focusableInTouchMode="false"
         android:layout_marginHorizontal="30dp"
         android:background="@drawable/baseline_add_shopping_cart_grey_24"
         app:layout_constraintTop_toTopOf="parent"

@@ -60,6 +60,8 @@ public class AddMedicineManualFragment extends DialogFragment {
     public static final int CAMERA_PERMISSION_CODE = 101;
     private static final int REQUEST_IMAGE_CAPTURE_CODE = 102;
 
+    private static final int REQUEST_GALARY_CODE = 202;
+
     private View view;
 
     private String pharmacyNameString;
@@ -162,6 +164,17 @@ public class AddMedicineManualFragment extends DialogFragment {
             }
 
         });
+
+        Button fileButton = view.findViewById(R.id.file_photo);
+
+        fileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageChooser();
+            }
+        });
+
+
         return view;
     }
 
@@ -251,6 +264,21 @@ public class AddMedicineManualFragment extends DialogFragment {
         window.setGravity(Gravity.CENTER);
     }
 
+    // this function is triggered when
+    // the Select Image Button is clicked
+    void imageChooser() {
+
+        // create an instance of the
+        // intent of the type image
+        Intent i = new Intent();
+        i.setType("image/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+
+        // pass the constant to compare it
+        // with the returned requestCode
+        startActivityForResult(Intent.createChooser(i, "Select Picture"), REQUEST_GALARY_CODE);
+    }
+
     private void askCameraPermissions() {
         if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA},  CAMERA_PERMISSION_CODE);
@@ -284,6 +312,13 @@ public class AddMedicineManualFragment extends DialogFragment {
         if (requestCode == REQUEST_IMAGE_CAPTURE_CODE && resultCode == Activity.RESULT_OK && data != null) {
             Bitmap image = (Bitmap) data.getExtras().get("data");
             photoView.setImageBitmap(image);
+        }
+        // Handle image selection result
+        if (requestCode == REQUEST_GALARY_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            Uri imageUri = data.getData();
+            if (imageUri != null) {
+                photoView.setImageURI(imageUri);
+            }
         }
     }
 }
