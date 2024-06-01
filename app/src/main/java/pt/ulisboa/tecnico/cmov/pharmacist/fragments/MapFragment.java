@@ -193,6 +193,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if (map != null && mCameraPosition != null) {
             map.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
             isCameraPositionSaved = true;
+            loadFavoritePharmacies();
         }
     }
 
